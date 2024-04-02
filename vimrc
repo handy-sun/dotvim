@@ -126,7 +126,7 @@ set cmdheight=1    " cmdline which under status line height, default = 1
 
 set statusline=
 set statusline+=\%7*[%n]                                   " buffer number
-set statusline+=\ %8*%<%.50F                               " file path maxlength=50
+set statusline+=\ %8*%<%.70F                               " file path maxlength
 set statusline+=%=\ %1*\%y%m%r%h%w\ %*                     " [filetype] [show'+'ifmodified]
 set statusline+=%5*\%{&ff}\[%{(&fenc==\"\")?&enc:&fenc}%*  " encoding
 set statusline+=%5*\%{(&bomb?\",BOM\":\"\")}]\ %*          " encoding has BOM
@@ -221,7 +221,7 @@ nnoremap <silent> Y y$
 " Delete text to EOL
 nnoremap <silent> D d$
 " Delete text to EOL, and insert
-nnoremap <silent> C c$
+nnoremap <silent> <A-c> c$
 
 " move current line down
 nnoremap <A-Down> :m +1<CR>
@@ -238,10 +238,10 @@ nnoremap tj :tabprevious<CR>
 nnoremap to :tabonly<CR>
 nnoremap tc :tabclose<CR>
 
-nnoremap sh :setlocal nosplitright<CR>:vsplit<CR>
-nnoremap sl :setlocal splitright<CR>:vsplit<CR>
-nnoremap sk :setlocal nosplitbelow<CR>:split<CR>
-nnoremap sj :setlocal splitbelow<CR>:split<CR>
+nnoremap sh :setlocal nosplitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
+nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
+nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
+nnoremap sj :setlocal splitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
 
 nnoremap <C-h> :wincmd h<CR>
 nnoremap <C-l> :wincmd l<CR>
@@ -292,7 +292,7 @@ function! XTermPasteBegin()
     return ''
 endfunction
 
-if !exists("*SourceAllVimRc")
+if !exists('*SourceAllVimRc')
     function! SourceAllVimRc()
         let l:finls = ''
         exe 'wa'
@@ -303,6 +303,6 @@ if !exists("*SourceAllVimRc")
             endif
         endfor
         exe 'noh'
-        echo "sourced files:" . l:finls
+        echo 'sourced files:' . l:finls
     endfunction
 endif
