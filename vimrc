@@ -164,7 +164,8 @@ augroup vimrcEx
 
     au BufRead,BufNew *.md,*.mkd,*.markdown set filetype=markdown
     " au BufRead,BufNewFile * if &filetype == "" | setfiletype txt | endif
-
+    au BufRead,BufNew *.conf,*.config set filetype=config
+    au BufRead,BufNew *.ini set filetype=dosini
     au FileType python set tabstop=4 shiftwidth=4 expandtab
     au FileType yaml set tabstop=2 shiftwidth=2 expandtab
     au FileType make set noexpandtab shiftwidth=8 softtabstop=0
