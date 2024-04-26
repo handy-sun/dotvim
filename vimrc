@@ -8,6 +8,12 @@ if has('syntax')
     syntax on
 endif
 
+if has('multi_byte') && &encoding ==# 'utf-8'
+    let t:isMultiByte = 1
+else
+    let t:isMultiByte = 0
+endif
+
 " filetype
 filetype on
 filetype plugin on              " Enable filetype plugins
@@ -97,7 +103,7 @@ set wildignorecase
 set list
 set listchars=tab:»·,trail:·,nbsp:+
 
-" color & theme [begin]
+" color & theme {{{1
 set t_Co=256
 
 hi MyTabSpace ctermfg=darkgrey
@@ -108,7 +114,7 @@ hi Search cterm=bold ctermbg=darkyellow
 hi CursorLine cterm=NONE gui=NONE term=NONE
 hi CursorLine ctermbg=240
 hi LineNr ctermfg=darkgrey
-hi CursorLineNr term=reverse cterm=bold ctermfg=lightgreen
+hi CursorLineNr term=reverse cterm=bold ctermfg=brown
 hi! link SignColumn   LineNr
 hi! link ShowMarksHLl DiffAdd
 hi! link ShowMarksHLu DiffChange
@@ -119,21 +125,24 @@ if filereadable(theme_file)
     colorscheme habamax
 endif
 
-" status line
+" status line {{{2
 set laststatus=2   " Always show the status line - use 2 lines for the status bar
 set cmdheight=1    " cmdline which under status line height, default = 1
 
-set statusline=
-set statusline+=\%7*[%n]                                   " buffer number
-set statusline+=\ %8*%<%.70F                               " file path maxlength
-set statusline+=%=\ %1*\%y%m%r%h%w\ %*                     " [filetype] [show'+'ifmodified]
-set statusline+=%5*\%{&ff}\[%{(&fenc==\"\")?&enc:&fenc}%*  " encoding
-set statusline+=%5*\%{(&bomb?\",BOM\":\"\")}]\ %*          " encoding has BOM
-set statusline+=%3*row:%l/%L\ col:%c\ %*                   " curRow/totalRow, curColumn
-set statusline+=%4*\%3p%%\ %*                              " current line percent
-set statusline+=%9*%{strftime(\"%H:%M\")}\ %*
+let &statusline ='%7*[%n] %*'
+let &statusline.='%8*%<%.70F %*'
+let &statusline.='%1*%= %y%m%r%h%w %*'
+let &statusline.='%5*%{&ff}[%{&fenc!=""?&fenc:&enc}%{&bomb?",BOM":""}] %*'
+if t:isMultiByte
+    let &statusline.='%4*%{&et?"":"»"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
+else
+    let &statusline.='%4*%{&et?"|":">"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
+endif
+let &statusline.='%3*row:%l/%L col:%c %*'
+let &statusline.='%4*%3p%% %*'
+let &statusline.='%9*%{strftime("%H:%M")} %*'
+let &statusline.='%#ErrorMsg#%{&paste?" paste ":""}%*'
 
-"hi statusline ctermbg=darkgrey
 hi User1 ctermfg=red ctermbg=darkgrey
 hi User2 ctermfg=brown ctermbg=darkgrey
 hi User3 ctermfg=yellow ctermbg=darkgrey
@@ -143,7 +152,8 @@ hi User6 ctermfg=blue ctermbg=darkgrey
 hi User7 ctermfg=magenta ctermbg=darkgrey
 hi User8 ctermfg=white ctermbg=darkgrey
 hi User9 ctermfg=lightgrey ctermbg=darkgrey
-" color & theme [end]
+" status line }}}2
+" color & theme }}}1
 
 if has('autocmd')
 augroup vimrcEx
@@ -303,3 +313,5 @@ if !exists('*SourceAllVimRc')
         echo 'sourced files:' . l:finls
     endfunction
 endif
+
+" vim:fdm=marker:fmr={{{,}}}
