@@ -91,8 +91,7 @@ set completeopt=longest,menu            " coding complete with filetype check
 set clipboard+=unnamed                  " share clipboard
 set wildmenu                            " show a navigable menu for tab completion"
 set wildmode=longest,list,full
-"set wildignore=*.o,*~,*.pyc,*.class
-set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
+set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
 set wildignorecase
 
 set list
@@ -161,17 +160,13 @@ augroup vimrcEx
     au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
     " --- These kind of files donnot set undofile    
     au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp,*.bak setlocal noundofile
-
-    au BufRead,BufNew *.md,*.mkd,*.markdown set filetype=markdown
-    " au BufRead,BufNewFile * if &filetype == "" | setfiletype txt | endif
-    au BufRead,BufNew *.conf,*.config set filetype=config
-    au BufRead,BufNew *.ini set filetype=dosini
+    au BufRead,BufNew *.conf,*.config setf config
+    au BufRead,BufNew *.log.* setf messages
     au FileType python set tabstop=4 shiftwidth=4 expandtab
     au FileType yaml set tabstop=2 shiftwidth=2 expandtab
     au FileType make set noexpandtab shiftwidth=8 softtabstop=0
     au FileType lua set noexpandtab shiftwidth=4 softtabstop=0
     au FileType cmake,systemd setlocal commentstring=#\ %s
-    " au FileType alpha set showtabline=0
 augroup END
 endif
 
@@ -184,9 +179,7 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\     " show blank between split window
 
 set foldenable
 set foldlevelstart=99
-"set foldmethod=manual   " fold manual
-"set foldcolumn=0
-"set foldlevel=1
+set foldmethod=manual
 
 set langmenu=zh_CN.UTF-8
 set helplang=en
@@ -211,7 +204,7 @@ nnoremap <C-a> ggVG
 " nnoremap <space>2 @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word
-nnoremap <silent> <leader><space> :noh<CR>
+nnoremap <silent> <leader><space> :nohlsearch<CR>
 " goto next search result and focus on this line
 nnoremap n nzz
 " goto previous search result and focus on this line
@@ -219,10 +212,6 @@ nnoremap N Nzz
 
 " Yank text to EOL
 nnoremap <silent> Y y$
-" Delete text to EOL
-nnoremap <silent> D d$
-" Delete text to EOL, and insert
-nnoremap <silent> <A-c> c$
 
 " move current line down
 nnoremap <A-Down> :m +1<CR>
@@ -239,6 +228,14 @@ nnoremap tj :tabprevious<CR>
 nnoremap to :tabonly<CR>
 nnoremap tc :tabclose<CR>
 
+nnoremap sc "ayiw
+nnoremap sp viw"ap
+nnoremap sw "ayiW
+nnoremap s[ viW"ap
+nnoremap sa :%s/<C-R>a//g<Left><Left>
+nnoremap s/ :%s/<C-R>///g<Left><Left>
+
+nnoremap se :e <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sh :setlocal nosplitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
@@ -254,7 +251,6 @@ nnoremap <leader>] :vertical resize +4<CR>
 nnoremap <leader>; :resize -2<CR>
 nnoremap <leader>' :resize +2<CR>
 
-nnoremap <leader>fe :vsp /etc/vimrc<CR>
 nnoremap <leader>fr :call SourceAllVimRc()<CR>
 " Search for word equal to each
 nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1
@@ -262,14 +258,13 @@ nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1
 nnoremap <leader>W :%s/\s\+$//<CR>:let @/=''<CR>
 " Enter break line
 nnoremap <leader><CR> i<CR><Esc>k$
-nnoremap <leader>\ :call ConfigureIndentLines()<CR>
 
 xnoremap <  <gv
 xnoremap >  >gv
 
 " ------- insert noremap -------
 inoremap <C-d> <Esc>ddi
-inoremap <C-z> <Esc>ui
+inoremap <leader>z <Esc>ui
 inoremap <C-u> <C-G>u<C-U>
 inoremap <C-k> <C-o>D
 
@@ -283,7 +278,8 @@ cnoremap <C-t> <C-R>=expand("%:p:h") . "/" <CR>
 " ------- visual noremap -------
 let t_ExistOutput = system('command -v xclip')
 if strlen(t_ExistOutput) > 0
-    vnoremap <C-c> :w !xclip -selection clipboard<CR>
+    vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
+    vnoremap <leader>c :silent w !xclip -selection clipboard<CR>
 endif
 
 " ------- custom function -------
