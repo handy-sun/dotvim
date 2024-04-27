@@ -4,6 +4,9 @@ set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 set termencoding=utf-8
 
+set fileformats=unix,dos,mac
+
+filetype plugin indent on       " Load plugins according to detected filetype.
 if has('syntax')
     syntax on
 endif
@@ -31,7 +34,6 @@ set title                       " change the terminal's title
 set history=1000                " history : how many lines of history VIM has to remember
 set scrolloff=1                 " movement keep 3 lines when scrolling
 set errorbells
-" set novisualbell                " turn off visual bell
 set visualbell t_vb=
 
 set nobackup                    " do not keep a backup file
@@ -40,7 +42,7 @@ set noswapfile
 " if undodir not set, create this dir and set it
 let t:username = trim(system('id -unz'))
 let t:undodir=expand('/tmp/vim.' . t:username . '/undo')
-" echo t:undodir
+
 if !isdirectory(t:undodir)
     silent! call mkdir(t:undodir, 'p')
 endif
@@ -49,20 +51,18 @@ set undofile
 exe 'set undodir=' . t:undodir
 
 
-" show
-""==set nu
+" --- show
 set number                      " show line numbers
 set ruler                       " show the current row and column
 set showcmd                     " display incomplete commands
-"set nowrap                      " auto linefeed
 set showmode                    " display current modes
 set showmatch                   " jump to matches when entering parentheses
 set matchtime=1                 " tenths of a second to show the matching parenthesis
-" show location
-"set cursorcolumn                " highlight the whole column
 set cursorline
 set splitright
 set splitbelow
+" set ttyfast                     " Faster redrawing.
+set list
 set relativenumber
 set background=dark
 
@@ -71,13 +71,9 @@ set autoindent
 set cindent
 set smartindent                 " ??? only for C language
 set shiftround
-" set shiftwidth=4
-" tab
+
 set tabstop=4                   " table key width
-" set softtabstop=4                " insert mode tab and backspace use 4 spaces
-"set noexpandtab                 " donnot use space relace tab
 set smarttab                    " at the beginning of line and section?
-" set expandtab                   " expand tabs to spaces
 
 " search
 set hlsearch                    " highlight searches
@@ -85,8 +81,6 @@ set incsearch                   " do incremental searching, search as you type
 set ignorecase                  " !!! ignore case when searching
 set smartcase                   " no ignorecase if Uppercase char present
 set infercase
-
-set fileformats=unix,dos,mac
 
 " select & complete
 set mouse=a                      " use mouse anywher in buffer"
@@ -100,10 +94,23 @@ set wildmode=longest,list,full
 set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
 set wildignorecase
 
-set list
-set listchars=tab:»·,trail:·,nbsp:+
+if t:isMultiByte
+    let &listchars = 'tab:»·,trail:•,extends:❯,precedes:❮,nbsp:±'
+    " let &fillchars = 'vert: ,stl: ,stlnc: '     " show blank between split window
+    let &fillchars = 'vert: ,stl: ,stlnc: ,diff: '
+    let &showbreak = ''
+    highlight VertSplit ctermfg=242
+else
+    let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:+'
+    let &fillchars = 'vert: ,stlnc:#'
+    let &showbreak = '-> '
+    " augroup NoUtfTrail
+    "     au InsertEnter * set listchars-=trail:.
+    "     au InsertLeave * set listchars+=trail:.
+    " augroup END
+endif
 
-" color & theme {{{1
+" --- color & theme {{{1
 set t_Co=256
 
 hi MyTabSpace ctermfg=darkgrey
@@ -159,8 +166,6 @@ if has('autocmd')
 augroup vimrcEx
     " --- Open file at the last edit line
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-    " --- Auto source vimrc '/etc/vimrc', '/etc/vim/vimrc', $MYVIMRC
-    "au BufReadPost * $VIM_PATH/{*.vim,*.yaml,vimrc} nested source $MYVIMRC | redraw
     " --- Autoreload .vim
     au BufWritePost,FileWritePost *.vim nested if &l:autoread > 0 | source <afile> | echo 'source ' . bufname('%') | endif
     " --- Check if file changed when its window is focus, more eager than 'autoread'
@@ -168,10 +173,10 @@ augroup vimrcEx
     " --- Highlight current line only on focused window
     au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
     au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
-    " --- These kind of files donnot set undofile    
+    " --- These kind of files donnot set undofile
     au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp,*.bak setlocal noundofile
     au BufRead,BufNew *.conf,*.config setf config
-    au BufRead,BufNew *.log.* setf messages
+    au BufRead,BufNew *.log setf messages
     au FileType python set tabstop=4 shiftwidth=4 expandtab
     au FileType yaml set tabstop=2 shiftwidth=2 expandtab
     au FileType make set noexpandtab shiftwidth=8 softtabstop=0
@@ -180,12 +185,11 @@ augroup vimrcEx
 augroup END
 endif
 
-" others
+" --- others
 set backspace=indent,eol,start  " make that backspace key work the way it should
 set whichwrap+=<,>,h,l          " allow backspace and cursor crossline border
 set viminfo+=!      " save global variable
 set report=0        " commands to tell user which line modified"
-set fillchars=vert:\ ,stl:\ ,stlnc:\     " show blank between split window
 
 set foldenable
 set foldlevelstart=99
@@ -219,6 +223,8 @@ nnoremap <silent> <leader><space> :nohlsearch<CR>
 nnoremap n nzz
 " goto previous search result and focus on this line
 nnoremap N Nzz
+nnoremap g; g;zvzz
+nnoremap g, g,zvzz
 
 " Yank text to EOL
 nnoremap <silent> Y y$
