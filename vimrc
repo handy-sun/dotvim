@@ -36,20 +36,36 @@ set scrolloff=1                 " movement keep 3 lines when scrolling
 set errorbells
 set visualbell t_vb=
 
-set nobackup                    " do not keep a backup file
-set noswapfile
+" set nobackup                    " do not keep a backup file
+set nowritebackup
 
-" if undodir not set, create this dir and set it
-let t:username = trim(system('id -unz'))
-let t:undodir=expand('/tmp/vim.' . t:username . '/undo')
+let t:cacheVim=$HOME . '/.cache/vim'
 
-if !isdirectory(t:undodir)
-    silent! call mkdir(t:undodir, 'p')
+let t:undoDir=t:cacheVim . '/undo'
+let t:swapDir=t:cacheVim . '/swap'
+let t:bakDir=t:cacheVim . '/backup'
+
+" undo dir
+if has('persistent_undo')
+    let &undodir=t:undoDir
+    if !isdirectory(&undodir)
+        silent! call mkdir(&undodir, 'p')
+    endif
+    set undofile
 endif
 
-set undofile
-exe 'set undodir=' . t:undodir
+" swap dir
+let &directory=t:swapDir
+if !isdirectory(&directory)
+    silent! call mkdir(&directory, 'p')
+endif
+set swapfile
 
+" backup dir
+let &backupdir=t:bakDir
+if !isdirectory(&backupdir)
+    silent! call mkdir(&backupdir, 'p')
+endif
 
 " --- show
 set number                      " show line numbers
@@ -101,13 +117,9 @@ if t:isMultiByte
     let &showbreak = ''
     highlight VertSplit ctermfg=242
 else
-    let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:+'
+    let &listchars = 'tab:> ,trail:.,extends:>,precedes:<,nbsp:+'
     let &fillchars = 'vert: ,stlnc:#'
     let &showbreak = '-> '
-    " augroup NoUtfTrail
-    "     au InsertEnter * set listchars-=trail:.
-    "     au InsertLeave * set listchars+=trail:.
-    " augroup END
 endif
 
 " --- color & theme {{{1
@@ -165,22 +177,23 @@ hi User9 ctermbg=darkgrey ctermfg=lightgrey
 if has('autocmd')
 augroup vimrcEx
     " --- Open file at the last edit line
-    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"zvzz" | endif
     " --- Autoreload .vim
     au BufWritePost,FileWritePost *.vim nested if &l:autoread > 0 | source <afile> | echo 'source ' . bufname('%') | endif
     " --- Check if file changed when its window is focus, more eager than 'autoread'
     au FocusGained * checktime
+    " au BufWinEnter * normal! zvzz
     " --- Highlight current line only on focused window
     au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
     au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
     " --- These kind of files donnot set undofile
-    au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp,*.bak setlocal noundofile
+    au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp setlocal noundofile
     au BufRead,BufNew *.conf,*.config setf config
     au BufRead,BufNew *.log setf messages
     au FileType yaml set shiftwidth=2 expandtab
-    " au FileType make set noexpandtab tabstop=8 softtabstop=0
     au FileType lua set noexpandtab tabstop=4 softtabstop=0
     au FileType systemd setlocal commentstring=#\ %s
+    au FileType crontab setlocal nobackup nowritebackup
     au FileType help wincmd L | vertical resize -10
 augroup END
 endif
