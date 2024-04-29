@@ -150,15 +150,15 @@ let &statusline.='%4*%3p%% %*'
 let &statusline.='%9*%{strftime("%H:%M")} %*'
 let &statusline.='%#ErrorMsg#%{&paste?" paste ":""}%*'
 
-hi User1 ctermfg=red ctermbg=darkgrey
-hi User2 ctermfg=brown ctermbg=darkgrey
-hi User3 ctermfg=yellow ctermbg=darkgrey
-hi User4 ctermfg=green ctermbg=darkgrey
-hi User5 ctermfg=cyan ctermbg=darkgrey
-hi User6 ctermfg=blue ctermbg=darkgrey
-hi User7 ctermfg=magenta ctermbg=darkgrey
-hi User8 ctermfg=white ctermbg=darkgrey
-hi User9 ctermfg=lightgrey ctermbg=darkgrey
+hi User1 ctermbg=darkgrey ctermfg=red
+hi User2 ctermbg=darkgrey ctermfg=brown
+hi User3 ctermbg=darkgrey ctermfg=yellow
+hi User4 ctermbg=darkgrey ctermfg=green
+hi User5 ctermbg=darkgrey ctermfg=cyan
+hi User6 ctermbg=darkgrey ctermfg=blue
+hi User7 ctermbg=darkgrey ctermfg=magenta
+hi User8 ctermbg=darkgrey ctermfg=white
+hi User9 ctermbg=darkgrey ctermfg=lightgrey
 " status line }}}2
 " color & theme }}}1
 
@@ -177,11 +177,11 @@ augroup vimrcEx
     au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp,*.bak setlocal noundofile
     au BufRead,BufNew *.conf,*.config setf config
     au BufRead,BufNew *.log setf messages
-    au FileType python set tabstop=4 shiftwidth=4 expandtab
-    au FileType yaml set tabstop=2 shiftwidth=2 expandtab
-    au FileType make set noexpandtab shiftwidth=8 softtabstop=0
-    au FileType lua set noexpandtab shiftwidth=4 softtabstop=0
-    au FileType cmake,systemd setlocal commentstring=#\ %s
+    au FileType yaml set shiftwidth=2 expandtab
+    " au FileType make set noexpandtab tabstop=8 softtabstop=0
+    au FileType lua set noexpandtab tabstop=4 softtabstop=0
+    au FileType systemd setlocal commentstring=#\ %s
+    au FileType help wincmd L | vertical resize -10
 augroup END
 endif
 
