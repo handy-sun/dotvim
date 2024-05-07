@@ -35,7 +35,8 @@ set history=1000                " history : how many lines of history VIM has to
 set scrolloff=1                 " movement keep 3 lines when scrolling
 set errorbells
 set visualbell t_vb=
-
+set timeout
+set timeoutlen=500
 " set nobackup                    " do not keep a backup file
 set nowritebackup
 
@@ -104,7 +105,7 @@ set selection=exclusive          " selection donnot contain the last word
 set selectmode=mouse,key
 
 set completeopt=longest,menu            " coding complete with filetype check
-set clipboard+=unnamed                  " share clipboard
+set clipboard^=unnamed,unnamedplus
 set wildmenu                            " show a navigable menu for tab completion"
 set wildmode=longest,list,full
 set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
@@ -259,8 +260,8 @@ nnoremap tc :tabclose<CR>
 
 nnoremap sc "ayiw
 nnoremap sp viw"ap
-nnoremap sw "ayiW
-nnoremap s[ viW"ap
+nnoremap sw "byiW
+nnoremap s[ viW"bp
 nnoremap sa :%s/<C-R>a//g<Left><Left>
 nnoremap s/ :%s/<C-R>///g<Left><Left>
 
@@ -293,7 +294,7 @@ xnoremap >  >gv
 
 " ------- insert noremap -------
 inoremap <C-d> <Esc>ddi
-inoremap <leader>z <Esc>ui
+inoremap <C-z> <Esc>ui
 inoremap <C-u> <C-G>u<C-U>
 inoremap <C-k> <C-o>D
 
