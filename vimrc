@@ -100,13 +100,13 @@ set smartcase                   " no ignorecase if Uppercase char present
 set infercase
 
 " select & complete
-set mouse=a                      " use mouse anywher in buffer"
+set mouse=a                      " use mouse anywher in buffer
 set selection=exclusive          " selection donnot contain the last word
 set selectmode=mouse,key
 
 set completeopt=longest,menu            " coding complete with filetype check
 set clipboard^=unnamed,unnamedplus
-set wildmenu                            " show a navigable menu for tab completion"
+set wildmenu                            " show a navigable menu for tab completion
 set wildmode=longest,list,full
 set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
 set wildignorecase
@@ -189,6 +189,7 @@ augroup vimrcEx
     au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
     " --- These kind of files donnot set undofile
     au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp setlocal noundofile
+    au BufRead,BufNew tmux*.conf setf tmux
     au BufRead,BufNew *.conf,*.config setf config
     au BufRead,BufNew *.log setf messages
     au FileType yaml set shiftwidth=2 expandtab
@@ -202,8 +203,8 @@ endif
 " --- others
 set backspace=indent,eol,start  " make that backspace key work the way it should
 set whichwrap+=<,>,h,l          " allow backspace and cursor crossline border
-set viminfo+=!      " save global variable
-set report=0        " commands to tell user which line modified"
+set viminfo+=!                  " save global variable
+set report=0                    " commands to tell user which line modified
 
 set foldenable
 set foldlevelstart=99
@@ -251,6 +252,8 @@ nnoremap <A-Up> :m -2<CR>
 nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
 
+nnoremap <A-'> :registers<CR>
+nnoremap t'    :marks<CR>
 
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
