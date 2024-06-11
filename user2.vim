@@ -18,7 +18,9 @@ Plug 'machakann/vim-highlightedyank'
 Plug 'ojroques/vim-oscyank', { 'branch': 'main' }
 Plug 'karb94/vim-smoothie'
 Plug 'tpope/vim-sleuth'
-Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar'
+Plug 'preservim/tagbar'
+Plug 'Yggdroot/indentLine'
 Plug 'skywind3000/vim-terminal-help'
 Plug 'rhysd/clever-f.vim'
 
@@ -84,12 +86,17 @@ nmap <leader>cc <leader>c_
 vmap <leader>c <Plug>OSCYankVisual
 
 " ------- tagbar
-let g:tagbar_width=30
-nnoremap <silent> <F4> :TagbarToggle<CR>
+let g:tagbar_width=40
+nnoremap <silent> <F8> :TagbarToggle<CR>
 
 if ! exists('is_ins_coc')
   finish
 endif
+
+" ------- indentLine
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+let g:indentLine_conceallevel = 2
+
 
 " --------- coc.nvim Example Vim configuration
 " Use tab for trigger completion with characters ahead and navigate

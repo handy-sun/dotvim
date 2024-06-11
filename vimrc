@@ -32,7 +32,7 @@ set shortmess=aTI
 set magic                       " For regular expressions turn magic on
 set title                       " change the terminal's title
 set history=1000                " history : how many lines of history VIM has to remember
-set scrolloff=1                 " movement keep 3 lines when scrolling
+set scrolloff=5                 " movement keep x lines when scrolling
 set errorbells
 set visualbell t_vb=
 set timeout
@@ -78,7 +78,7 @@ set matchtime=1                 " tenths of a second to show the matching parent
 set cursorline
 set splitright
 set splitbelow
-" set ttyfast                     " Faster redrawing.
+set ttyfast                     " Faster redrawing.
 set list
 set relativenumber
 set background=dark
@@ -100,9 +100,11 @@ set smartcase                   " no ignorecase if Uppercase char present
 set infercase
 
 " select & complete
-set mouse=a                      " use mouse anywher in buffer
 set selection=exclusive          " selection donnot contain the last word
 set selectmode=mouse,key
+if has('mouse')
+    set mouse=a                       " use mouse anywher in buffer
+endif
 
 set completeopt=longest,menu            " coding complete with filetype check
 set clipboard^=unnamed,unnamedplus
@@ -113,10 +115,8 @@ set wildignorecase
 
 if t:isMultiByte
     let &listchars = 'tab:»·,trail:•,extends:❯,precedes:❮,nbsp:±'
-    " let &fillchars = 'vert: ,stl: ,stlnc: '     " show blank between split window
     let &fillchars = 'vert: ,stl: ,stlnc: ,diff: '
-    let &showbreak = ''
-    highlight VertSplit ctermfg=242
+    let &showbreak = '▸ '
 else
     let &listchars = 'tab:> ,trail:.,extends:>,precedes:<,nbsp:+'
     let &fillchars = 'vert: ,stlnc:#'
@@ -129,21 +129,25 @@ set t_Co=256
 hi MyTabSpace ctermfg=darkgrey
 match MyTabSpace /\t\| /
 
+let vim_install_path=$VIMRUNTIME
+let theme_file=vim_install_path . '/colors/habamax.vim'
+let theme_2nd_file=vim_install_path . '/colors/peachpuff.vim'
+
+if filereadable(theme_file)
+    colorscheme habamax
+elseif filereadable(theme_2nd_file)
+    colorscheme peachpuff
+endif
+
 " set mark column color
 hi Search cterm=bold ctermbg=darkyellow
 hi CursorLine cterm=NONE gui=NONE term=NONE
 hi CursorLine ctermbg=240
-hi LineNr ctermfg=darkgrey
 hi CursorLineNr term=reverse cterm=bold ctermfg=brown
+hi! LineNr ctermfg=darkgrey term=reverse
 hi! link SignColumn   LineNr
 hi! link ShowMarksHLl DiffAdd
 hi! link ShowMarksHLu DiffChange
-
-let vim_install_path=$VIMRUNTIME
-let theme_file=vim_install_path.'/colors/habamax.vim'
-if filereadable(theme_file)
-    colorscheme habamax
-endif
 
 " status line {{{2
 set laststatus=2   " Always show the status line - use 2 lines for the status bar
@@ -154,7 +158,7 @@ let &statusline.='%8*%<%.70F %*'
 let &statusline.='%1*%= %y%m%r%h%w %*'
 let &statusline.='%5*%{&ff}[%{&fenc!=""?&fenc:&enc}%{&bomb?",BOM":""}] %*'
 if t:isMultiByte
-    let &statusline.='%4*%{&et?"":"»"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
+    let &statusline.='%4*%{&et?"•":"»"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
 else
     let &statusline.='%4*%{&et?"|":">"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
 endif
@@ -206,9 +210,11 @@ set whichwrap+=<,>,h,l          " allow backspace and cursor crossline border
 set viminfo+=!                  " save global variable
 set report=0                    " commands to tell user which line modified
 
-set foldenable
-set foldlevelstart=99
-set foldmethod=manual
+if has('folding')
+    set foldenable
+    set foldlevelstart=99
+    set foldmethod=manual
+endif
 
 set langmenu=zh_CN.UTF-8
 set helplang=en
@@ -271,6 +277,7 @@ nnoremap sa :%s/<C-R>a//g<Left><Left>
 nnoremap s/ :%s/<C-R>///g<Left><Left>
 
 nnoremap se :e <C-R>=expand('%:p:h') . '/' <CR>
+nnoremap st :tabnew <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sh :setlocal nosplitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
@@ -337,6 +344,11 @@ if !exists('*SourceAllVimRc')
         exe 'noh'
         echo 'sourced files:' . l:finls
     endfunction
+endif
+
+let user2ndVim=$HOME . '/.vim/vimrc'
+if filereadable(user2ndVim)
+    exe 'source' user2ndVim
 endif
 
 " vim:fdm=marker:fmr={{{,}}}
