@@ -3,11 +3,7 @@ scriptencoding utf-8
 let user_vim_dir = $HOME.(has('win32') ? '\vimfiles' : '/.vim')
 
 let g:plug_shallow = 1
-" let g:plug_window  = 'enew'
-" let g:plug_window = 'vertical topright new'
 let g:plug_pwindow = 'vertical leftbelow new'
-" let g:plug_pwindow =above 12new'
-" let g:plug_url_format = 'git@github.com:%s.git'
 
 call plug#begin(user_vim_dir.'/plugged')
 
@@ -17,7 +13,6 @@ Plug 'preservim/nerdcommenter'
 Plug 'markonm/traces.vim'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'luochen1990/rainbow'
-" Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug'] }
 Plug 'junegunn/vim-easy-align'
 Plug 'machakann/vim-highlightedyank'
 Plug 'ojroques/vim-oscyank', { 'branch': 'main' }
@@ -83,18 +78,6 @@ let g:rainbow_conf = {
 " ------- vim-highlightedyank
 let g:highlightedyank_highlight_duration = 700
 
-" -------- markdown
-" map <F3> :MarkdownPreview<CR>
-" let g:mkdp_auto_start = 0 " Open file auto popup
-" let g:mkdp_auto_close = 1
-" let g:mkdp_refresh_slow = 1 " Slowly preview, exit 'insert mode' will refresh
-" let g:mkdp_open_to_the_world = 1 " Open public network link
-" "let g:mkdp_browser = '' " Specific web browser, default follow system browser
-" let g:mkdp_echo_preview_url = 1 " Echo link at cmd line
-" let g:mkdp_open_ip = '0.0.0.0'
-" let g:mkdp_port = '12870'
-" let g:mkdp_page_title = '「${name}」' " Default tile is file name
-
 " -------- vim-oscyank
 nmap <leader>c :call OSCYankOperator<CR>
 nmap <leader>cc <leader>c_
@@ -140,6 +123,7 @@ nmap <silent> gr <Plug>(coc-references)
 " Symbol renaming
 nmap <leader>rn <Plug>(coc-rename)
 
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 nnoremap <silent><nowait> \a  :<C-u>CocList diagnostics<cr>
 " Manage extensions

@@ -214,8 +214,10 @@ set langmenu=zh_CN.UTF-8
 set helplang=en
 
 " disable auto wrap and auto comments
-set formatoptions-=co
-set formatoptions+=mM
+" set formatoptions-=co
+" set formatoptions+=mM
+set formatoptions=croqn2mB1
+set sessionoptions=blank,buffers,curdir,folds,help,options,tabpages,winsize,slash,unix,resize
 
 let &t_SI .= "\<Esc>[?2004h"   " start insert enable bracketed paste mode
 let &t_EI .= "\<Esc>[?2004l"   " end insert disable bracketed paste mode
