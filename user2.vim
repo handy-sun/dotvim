@@ -11,18 +11,27 @@ Plug 'preservim/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'preservim/nerdcommenter'
 Plug 'markonm/traces.vim'
-Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'luochen1990/rainbow'
 Plug 'junegunn/vim-easy-align'
 Plug 'machakann/vim-highlightedyank'
-Plug 'ojroques/vim-oscyank', { 'branch': 'main' }
-Plug 'karb94/vim-smoothie'
 Plug 'tpope/vim-sleuth'
-" Plug 'majutsushi/tagbar'
 Plug 'preservim/tagbar'
-Plug 'Yggdroot/indentLine'
-Plug 'skywind3000/vim-terminal-help'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'mileszs/ack.vim'
+Plug 'bling/vim-bufferline'
 Plug 'rhysd/clever-f.vim'
+Plug 'vim-scripts/a.vim'
+
+if (v:version >= 802)
+    Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+    Plug 'Yggdroot/indentLine'
+    Plug 'karb94/vim-smoothie'
+endif
+
+if has('terminal')
+    Plug 'skywind3000/vim-terminal-help'
+endif
 
 let coc_dir = $HOME.'/.config/coc'
 if isdirectory(coc_dir)
@@ -87,7 +96,7 @@ vmap <leader>c <Plug>OSCYankVisual
 
 " ------- tagbar
 let g:tagbar_width=40
-nnoremap <silent> <F8> :TagbarToggle<CR>
+nnoremap <silent> <F2> :TagbarToggle<CR>
 
 if ! exists('is_ins_coc')
   finish
@@ -96,7 +105,6 @@ endif
 " ------- indentLine
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 let g:indentLine_conceallevel = 2
-
 
 " --------- coc.nvim Example Vim configuration
 " Use tab for trigger completion with characters ahead and navigate
@@ -151,9 +159,9 @@ nnoremap <silent><nowait> \p  :<C-u>CocListResume<CR>
 " coc custom
 if has('autocmd')
 augroup clangdEx
-  au FileType javascript setlocal omnifunc=coc#refresh()
-  au FileType cpp setlocal omnifunc=coc#refresh()
-  au FileType c,cpp nnoremap <leader>h :ClangdSwitchSourceHeaderVSplit<CR>
+    au FileType javascript setlocal omnifunc=coc#refresh()
+    au FileType cpp setlocal omnifunc=coc#refresh()
+    au FileType c,cpp nnoremap <leader>h :ClangdSwitchSourceHeaderVSplit<CR>
 augroup END
 endif
 

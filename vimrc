@@ -35,8 +35,12 @@ set history=1000                " history : how many lines of history VIM has to
 set scrolloff=5                 " movement keep x lines when scrolling
 set errorbells
 set visualbell t_vb=
-set timeout
-set timeoutlen=500
+
+set timeout           " for mappings
+set timeoutlen=1000   " default value
+set ttimeout          " for key codes
+set ttimeoutlen=10    " unnoticeable small value
+
 " set nobackup                    " do not keep a backup file
 set nowritebackup
 
@@ -45,6 +49,7 @@ let t:cacheVim=$HOME . '/.cache/vim'
 let t:undoDir=t:cacheVim . '/undo'
 let t:swapDir=t:cacheVim . '/swap'
 let t:bakDir=t:cacheVim . '/backup'
+let t:vimInfoFile=t:cacheVim . '/viminfo'
 
 " undo dir
 if has('persistent_undo')
@@ -67,6 +72,9 @@ let &backupdir=t:bakDir
 if !isdirectory(&backupdir)
     silent! call mkdir(&backupdir, 'p')
 endif
+
+let &viminfo.=',!'              " save global variable
+let &viminfo.=',n' . t:vimInfoFile
 
 " --- show
 set number                      " show line numbers
@@ -110,17 +118,17 @@ set completeopt=longest,menu            " coding complete with filetype check
 set clipboard^=unnamed,unnamedplus
 set wildmenu                            " show a navigable menu for tab completion
 set wildmode=longest,list,full
-set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
+set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,*build*,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
 set wildignorecase
 
 if t:isMultiByte
     let &listchars = 'tab:»·,trail:•,extends:❯,precedes:❮,nbsp:±'
     let &fillchars = 'vert: ,stl: ,stlnc: ,diff: '
-    let &showbreak = '▸ '
+    let &showbreak = '⣿'
 else
     let &listchars = 'tab:> ,trail:.,extends:>,precedes:<,nbsp:+'
     let &fillchars = 'vert: ,stlnc:#'
-    let &showbreak = '-> '
+    let &showbreak = '->'
 endif
 
 " --- color & theme {{{1
@@ -207,7 +215,6 @@ endif
 " --- others
 set backspace=indent,eol,start  " make that backspace key work the way it should
 set whichwrap+=<,>,h,l          " allow backspace and cursor crossline border
-set viminfo+=!                  " save global variable
 set report=0                    " commands to tell user which line modified
 
 if has('folding')
@@ -225,14 +232,22 @@ set helplang=en
 set formatoptions=croqn2mB1
 set sessionoptions=blank,buffers,curdir,folds,help,options,tabpages,winsize,slash,unix,resize
 
-let &t_SI .= "\<Esc>[?2004h"   " start insert enable bracketed paste mode
-let &t_EI .= "\<Esc>[?2004l"   " end insert disable bracketed paste mode
+if empty($TMUX)
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7\<Esc>[?2004h"
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7\<Esc>[?2004l"
+    " let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+else
+    let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+    let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+    " let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
+endif
+
+let &grepprg = 'grep -rn $*'
 
 " keyborad bind
 let mapleader = "\<space>"
 
 " ------- normal noremap -------
-nnoremap <silent> <S-Tab> :normal za<CR>
 nnoremap <space>s :w<CR>
 nnoremap <space>q :wq<CR>
 nnoremap <space><bs> :wqa<CR>
@@ -240,28 +255,34 @@ nnoremap <space>e :q!<CR>
 nnoremap <C-a> ggVG
 " nnoremap <space>2 @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
-" cancel highlight search word
-nnoremap <silent> <leader><space> :nohlsearch<CR>
-" goto next search result and focus on this line
-nnoremap n nzz
-" goto previous search result and focus on this line
-nnoremap N Nzz
+" cancel highlight search word and clean screen
+nnoremap <silent> <leader><space> :nohlsearch<CR>:diffupdate<CR>:syntax sync fromstart<CR><C-l>
+
+" always goto backward search result
+nnoremap <expr> n  'Nn'[v:searchforward]
+" always goto forward search result
+nnoremap <expr> N  'nN'[v:searchforward]
+
 nnoremap g; g;zvzz
 nnoremap g, g,zvzz
 
 " Yank text to EOL
 nnoremap <silent> Y y$
 
-" move current line down
-nnoremap <A-Down> :m +1<CR>
-" move current line up
-nnoremap <A-Up> :m -2<CR>
+" move current line up and down
+nnoremap <A-Up>   :<c-u>execute 'move -1-' . v:count1<CR>
+nnoremap <A-Down> :<c-u>execute 'move +' . v:count1<CR>
+vnoremap <A-Up>   :m '<-2<CR>gv
+vnoremap <A-Down> :m '>+<CR>gv
+" add lots of line(s)
+nnoremap [\  :<c-u>put! =repeat(nr2char(10), v:count1)<CR>'[
+nnoremap ]\  :<c-u>put =repeat(nr2char(10), v:count1)<CR>
 
 nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
 
-nnoremap <A-'> :registers<CR>
-nnoremap t'    :marks<CR>
+nnoremap zr :registers<CR>
+nnoremap zm :marks<CR>:mark 
 
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -283,11 +304,6 @@ nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sj :setlocal splitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
 
-nnoremap <C-h> :wincmd h<CR>
-nnoremap <C-l> :wincmd l<CR>
-nnoremap <C-j> :wincmd j<CR>
-nnoremap <C-k> :wincmd k<CR>
-
 nnoremap <leader>[ :vertical resize -4<CR>
 nnoremap <leader>] :vertical resize +4<CR>
 nnoremap <leader>; :resize -2<CR>
@@ -295,9 +311,10 @@ nnoremap <leader>' :resize +2<CR>
 
 nnoremap <leader>fr :call SourceAllVimRc()<CR>
 " Search for word equal to each
-nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1
+nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1<CR>
 " Trim EOL trailing space
-nnoremap <leader>W :%s/\s\+$//<CR>:let @/=''<CR>
+nnoremap <leader>W :%s/\s\+$//<CR>
+
 " Enter break line
 nnoremap <leader><CR> i<CR><Esc>k$
 
@@ -313,15 +330,14 @@ inoremap <C-k> <C-o>D
 inoremap <C-b> <C-Left>
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
-" ------- command noremap
+" ------- command noremap ------- 
 " Complete absolute path of current file (before input the file)
 cnoremap <C-t> <C-R>=expand("%:p:h") . "/" <CR>
 
 " ------- visual noremap -------
-let t_ExistOutput = system('command -v xclip')
-if strlen(t_ExistOutput) > 0
+" use xclip to copy line(s) to system clipboard in visual mode
+if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
-    vnoremap <leader>c :silent w !xclip -selection clipboard<CR>
 endif
 
 " ------- custom function -------
