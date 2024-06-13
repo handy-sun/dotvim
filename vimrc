@@ -73,8 +73,8 @@ if !isdirectory(&backupdir)
     silent! call mkdir(&backupdir, 'p')
 endif
 
-let &viminfo.=',!'              " save global variable
-let &viminfo.=',n' . t:vimInfoFile
+let &viminfo.=',!'                    " save global variable
+let &viminfo.=',n' . t:vimInfoFile    " set <viminfo> file path
 
 " --- show
 set number                      " show line numbers
@@ -175,15 +175,6 @@ let &statusline.='%4*%3p%% %*'
 let &statusline.='%9*%{strftime("%H:%M")} %*'
 let &statusline.='%#ErrorMsg#%{&paste?" paste ":""}%*'
 
-hi User1 ctermbg=darkgrey ctermfg=red
-hi User2 ctermbg=darkgrey ctermfg=brown
-hi User3 ctermbg=darkgrey ctermfg=yellow
-hi User4 ctermbg=darkgrey ctermfg=green
-hi User5 ctermbg=darkgrey ctermfg=cyan
-hi User6 ctermbg=darkgrey ctermfg=blue
-hi User7 ctermbg=darkgrey ctermfg=magenta
-hi User8 ctermbg=darkgrey ctermfg=white
-hi User9 ctermbg=darkgrey ctermfg=lightgrey
 " status line }}}2
 " color & theme }}}1
 
@@ -192,9 +183,11 @@ augroup vimrcEx
     " --- Open file at the last edit line
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"zvzz" | endif
     " --- Autoreload .vim
-    au BufWritePost,FileWritePost *.vim nested if &l:autoread > 0 | source <afile> | echo 'source ' . bufname('%') | endif
+    au BufWritePost,FileWritePost *vimrc,*.vim nested if &l:autoread > 0 | source <afile> | echo 'source ' . bufname('%') | endif
     " --- Check if file changed when its window is focus, more eager than 'autoread'
     au FocusGained * checktime
+    " --- Always keep user default color in stl
+    au BufReadPost,ColorScheme * call s:ColorsDefault()
     " au BufWinEnter * normal! zvzz
     " --- Highlight current line only on focused window
     au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
@@ -304,6 +297,8 @@ nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap sj :setlocal splitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
 
+nnoremap <leader>g :CpGrep  <C-R>=expand('%:p:h') . '/'<CR><C-Left><Left>
+
 nnoremap <leader>[ :vertical resize -4<CR>
 nnoremap <leader>] :vertical resize +4<CR>
 nnoremap <leader>; :resize -2<CR>
@@ -340,6 +335,9 @@ if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
 endif
 
+" ------- curtom command -------
+command! -nargs=+ CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
+
 " ------- custom function -------
 function! XTermPasteBegin()
     set pastetoggle=<Esc>[201~
@@ -347,11 +345,23 @@ function! XTermPasteBegin()
     return ''
 endfunction
 
+function! s:ColorsDefault() abort
+    hi User1 ctermbg=darkgrey ctermfg=red
+    hi User2 ctermbg=darkgrey ctermfg=brown
+    hi User3 ctermbg=darkgrey ctermfg=yellow
+    hi User4 ctermbg=darkgrey ctermfg=green
+    hi User5 ctermbg=darkgrey ctermfg=cyan
+    hi User6 ctermbg=darkgrey ctermfg=blue
+    hi User7 ctermbg=darkgrey ctermfg=magenta
+    hi User8 ctermbg=darkgrey ctermfg=white
+    hi User9 ctermbg=darkgrey ctermfg=lightgrey
+endfunction
+
 if !exists('*SourceAllVimRc')
     function! SourceAllVimRc()
         let l:finls = ''
         exe 'wa'
-        for file in ['/etc/vimrc', '/etc/vim/vimrc', $MYVIMRC]
+        for file in ['/etc/vimrc', '/etc/vim/vimrc', '$HOME/.vimrc']
             if filereadable(expand(file))
                 exe 'source' file
                 let l:finls = l:finls.' '.file
