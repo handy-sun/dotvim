@@ -1,5 +1,41 @@
-set encoding=utf-8
 scriptencoding utf-8
+
+" ------- custom function ------- {{{1
+function! XTermPasteBegin()
+    set pastetoggle=<Esc>[201~
+    set paste
+    return ''
+endfunction
+
+function! s:ColorsDefault() abort
+    hi User1 ctermbg=darkgrey ctermfg=red
+    hi User2 ctermbg=darkgrey ctermfg=brown
+    hi User3 ctermbg=darkgrey ctermfg=yellow
+    hi User4 ctermbg=darkgrey ctermfg=green
+    hi User5 ctermbg=darkgrey ctermfg=cyan
+    hi User6 ctermbg=darkgrey ctermfg=blue
+    hi User7 ctermbg=darkgrey ctermfg=magenta
+    hi User8 ctermbg=darkgrey ctermfg=white
+    hi User9 ctermbg=darkgrey ctermfg=lightgrey
+endfunction
+
+if !exists('*SourceAllVimRc')
+    function! SourceAllVimRc()
+        let l:finls = ''
+        exe 'wa'
+        for file in ['/etc/vimrc', '/etc/vim/vimrc', '$HOME/.vimrc']
+            if filereadable(expand(file))
+                exe 'source' file
+                let l:finls = l:finls.' '.file
+            endif
+        endfor
+        exe 'noh'
+        echo 'sourced files:' . l:finls
+    endfunction
+endif
+" custom function }}}1
+
+set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 set termencoding=utf-8
@@ -157,7 +193,10 @@ hi! link SignColumn   LineNr
 hi! link ShowMarksHLl DiffAdd
 hi! link ShowMarksHLu DiffChange
 
+
 " status line {{{2
+:call s:ColorsDefault()
+
 set laststatus=2   " Always show the status line - use 2 lines for the status bar
 set cmdheight=1    " cmdline which under status line height, default = 1
 
@@ -187,7 +226,7 @@ augroup vimrcEx
     " --- Check if file changed when its window is focus, more eager than 'autoread'
     au FocusGained * checktime
     " --- Always keep user default color in stl
-    au BufReadPost,ColorScheme * call s:ColorsDefault()
+    au ColorScheme * call s:ColorsDefault()
     " au BufWinEnter * normal! zvzz
     " --- Highlight current line only on focused window
     au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
@@ -269,9 +308,9 @@ nnoremap ]\  :<c-u>put =repeat(nr2char(10), v:count1)<CR>
 nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
 
-nnoremap zl :ls<CR>:b 
+nnoremap zl :ls<CR>:b
 nnoremap zk :registers<CR>
-nnoremap z; :marks<CR>:mark 
+nnoremap z; :marks<CR>:<C-u>g'
 nnoremap zj :,+1join<CR>
 
 nnoremap tn :tabnew<CR>
@@ -283,9 +322,10 @@ nnoremap tc :tabclose<CR>
 nnoremap sc "ayiw
 nnoremap sp viw"ap
 nnoremap sw "byiW
-nnoremap s[ viW"bp
+nnoremap so viW"bp
 nnoremap sa :%s/<C-R>a//g<Left><Left>
 nnoremap s/ :%s/<C-R>///g<Left><Left>
+nnoremap sr :%s/\<<C-R><C-W>\>//g<Left><Left>
 
 nnoremap se :e <C-R>=expand('%:p:h') . '/' <CR>
 nnoremap st :tabnew <C-R>=expand('%:p:h') . '/' <CR>
@@ -334,40 +374,6 @@ endif
 
 " ------- custom command -------
 command! -nargs=+ CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
-
-" ------- custom function -------
-function! XTermPasteBegin()
-    set pastetoggle=<Esc>[201~
-    set paste
-    return ''
-endfunction
-
-function! s:ColorsDefault() abort
-    hi User1 ctermbg=darkgrey ctermfg=red
-    hi User2 ctermbg=darkgrey ctermfg=brown
-    hi User3 ctermbg=darkgrey ctermfg=yellow
-    hi User4 ctermbg=darkgrey ctermfg=green
-    hi User5 ctermbg=darkgrey ctermfg=cyan
-    hi User6 ctermbg=darkgrey ctermfg=blue
-    hi User7 ctermbg=darkgrey ctermfg=magenta
-    hi User8 ctermbg=darkgrey ctermfg=white
-    hi User9 ctermbg=darkgrey ctermfg=lightgrey
-endfunction
-
-if !exists('*SourceAllVimRc')
-    function! SourceAllVimRc()
-        let l:finls = ''
-        exe 'wa'
-        for file in ['/etc/vimrc', '/etc/vim/vimrc', '$HOME/.vimrc']
-            if filereadable(expand(file))
-                exe 'source' file
-                let l:finls = l:finls.' '.file
-            endif
-        endfor
-        exe 'noh'
-        echo 'sourced files:' . l:finls
-    endfunction
-endif
 
 let user2ndVim=$HOME . '/.vim/vimrc'
 if filereadable(user2ndVim)

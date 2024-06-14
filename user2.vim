@@ -15,7 +15,6 @@ Plug 'luochen1990/rainbow'
 Plug 'junegunn/vim-easy-align'
 Plug 'machakann/vim-highlightedyank'
 Plug 'tpope/vim-sleuth'
-Plug 'preservim/tagbar'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
@@ -27,6 +26,10 @@ if (v:version >= 802)
     Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
     Plug 'Yggdroot/indentLine'
     Plug 'karb94/vim-smoothie'
+endif
+
+if executable('ctags')
+    Plug 'preservim/tagbar'
 endif
 
 if has('terminal')
@@ -56,39 +59,18 @@ let g:NERDTreeShowIcons = 0
 
 let g:NERDTreeWinSize = min([24, winwidth(0) / 5])
 let g:NERDTreeWinSizeMax = 40
-
+let g:NERDTreeDirArrowExpandable = '+'
+let g:NERDTreeDirArrowCollapsible = '-'
 
 let g:nerdtree_tabs_autoclose = 1
 let g:nerdtree_tabs_open_on_console_startup = 2
 
 nnoremap <C-n> :NERDTreeTabsToggle<CR>
 " Find file in tree, and cursor move to the file position in tree
-nnoremap <leader>m :NERDTreeTabsFind<CR>
+nnoremap <leader>m :NERDTreeFind<CR>
 
 " -------- rainbow
-let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
-let g:rainbow_conf = {
-\   'guifgs': ['darkorange3', 'seagreen3', 'royalblue3', 'firebrick'],
-\   'ctermfgs': ['lightyellow', 'lightcyan','lightblue', 'lightmagenta'],
-\   'operators': '_,_',
-\   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
-\   'separately': {
-\       '*': {},
-\       'tex': {
-\           'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/'],
-\       },
-\       'lisp': {
-\           'guifgs': ['darkorange3', 'seagreen3', 'royalblue3', 'firebrick'],
-\       },
-\       'vim': {
-\           'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
-\       },
-\       'html': {
-\           'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-\       },
-\       'css': 0,
-\   }
-\}
+" let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
 " ------- vim-highlightedyank
 let g:highlightedyank_highlight_duration = 700
