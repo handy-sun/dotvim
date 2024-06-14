@@ -54,6 +54,10 @@ nnoremap <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeShowIcons = 0
 
+let g:NERDTreeWinSize = min([24, winwidth(0) / 5])
+let g:NERDTreeWinSizeMax = 40
+
+
 let g:nerdtree_tabs_autoclose = 1
 let g:nerdtree_tabs_open_on_console_startup = 2
 
@@ -95,7 +99,12 @@ nmap <leader>cc <leader>c_
 vmap <leader>c <Plug>OSCYankVisual
 
 " ------- tagbar
-let g:tagbar_width=40
+let g:tagbar_width = max([30, winwidth(0) / 5])
+let g:tagbar_compact = 2
+let g:tagbar_indent = 1
+let g:tagbar_iconchars = ['+', '-']
+let g:tagbar_sort = 0
+
 nnoremap <silent> <F2> :TagbarToggle<CR>
 
 if ! exists('is_ins_coc')

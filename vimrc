@@ -118,15 +118,15 @@ set completeopt=longest,menu            " coding complete with filetype check
 set clipboard^=unnamed,unnamedplus
 set wildmenu                            " show a navigable menu for tab completion
 set wildmode=longest,list,full
-set wildignore=.git,.hg,.svn,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,*build*,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
+set wildignore=.git,.hg,.svn,__pycache__,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,*build*,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
 set wildignorecase
 
 if t:isMultiByte
-    let &listchars = 'tab:»·,trail:•,extends:❯,precedes:❮,nbsp:±'
+    let &listchars = 'tab:»·,trail:•,extends:→,precedes:←,nbsp:±'
     let &fillchars = 'vert: ,stl: ,stlnc: ,diff: '
     let &showbreak = '⣿'
 else
-    let &listchars = 'tab:> ,trail:.,extends:>,precedes:<,nbsp:+'
+    let &listchars = 'tab:>-,trail:.,extends:>,precedes:<,nbsp:+'
     let &fillchars = 'vert: ,stlnc:#'
     let &showbreak = '->'
 endif
@@ -219,23 +219,18 @@ endif
 set langmenu=zh_CN.UTF-8
 set helplang=en
 
-" disable auto wrap and auto comments
-" set formatoptions-=co
-" set formatoptions+=mM
 set formatoptions=croqn2mB1
 set sessionoptions=blank,buffers,curdir,folds,help,options,tabpages,winsize,slash,unix,resize
 
 if empty($TMUX)
     let &t_SI = "\<Esc>]50;CursorShape=1\x7\<Esc>[?2004h"
     let &t_EI = "\<Esc>]50;CursorShape=0\x7\<Esc>[?2004l"
-    " let &t_SR = "\<Esc>]50;CursorShape=2\x7"
 else
     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
     let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-    " let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
 endif
 
-let &grepprg = 'grep -rn $*'
+let &grepprg = 'grep --binary-files=without-match -rn $*'
 
 " keyborad bind
 let mapleader = "\<space>"
@@ -246,7 +241,7 @@ nnoremap <space>q :wq<CR>
 nnoremap <space><bs> :wqa<CR>
 nnoremap <space>e :q!<CR>
 nnoremap <C-a> ggVG
-" nnoremap <space>2 @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
+nnoremap <space>2 @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
 nnoremap <silent> <leader><space> :nohlsearch<CR>:diffupdate<CR>:syntax sync fromstart<CR><C-l>
@@ -274,8 +269,10 @@ nnoremap ]\  :<c-u>put =repeat(nr2char(10), v:count1)<CR>
 nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
 
-nnoremap zr :registers<CR>
-nnoremap zm :marks<CR>:mark 
+nnoremap zl :ls<CR>:b 
+nnoremap zk :registers<CR>
+nnoremap z; :marks<CR>:mark 
+nnoremap zj :,+1join<CR>
 
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -325,7 +322,7 @@ inoremap <C-k> <C-o>D
 inoremap <C-b> <C-Left>
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
-" ------- command noremap ------- 
+" ------- command noremap -------
 " Complete absolute path of current file (before input the file)
 cnoremap <C-t> <C-R>=expand("%:p:h") . "/" <CR>
 
@@ -335,7 +332,7 @@ if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
 endif
 
-" ------- curtom command -------
+" ------- custom command -------
 command! -nargs=+ CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
 
 " ------- custom function -------
