@@ -19,6 +19,10 @@ function! s:ColorsDefault() abort
     hi User9 ctermbg=darkgrey ctermfg=lightgrey
 endfunction
 
+function! GetAbsFileDir()
+    return (expand('%:p:h') . '/')
+endfunction
+
 if !exists('*SourceAllVimRc')
     function! SourceAllVimRc()
         let l:finls = ''
@@ -327,12 +331,12 @@ nnoremap sa :%s/<C-R>a//g<Left><Left>
 nnoremap s/ :%s/<C-R>///g<Left><Left>
 nnoremap sr :%s/\<<C-R><C-W>\>//g<Left><Left>
 
-nnoremap se :e <C-R>=expand('%:p:h') . '/' <CR>
-nnoremap st :tabnew <C-R>=expand('%:p:h') . '/' <CR>
-nnoremap sh :setlocal nosplitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
-nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=expand('%:p:h') . '/' <CR>
-nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
-nnoremap sj :setlocal splitbelow<CR>:split <C-R>=expand('%:p:h') . '/' <CR>
+nnoremap se :e <C-R>=GetAbsFileDir()<CR>
+nnoremap st :tabnew <C-R>=GetAbsFileDir()<CR>
+nnoremap sh :setlocal nosplitright<CR>:vsplit <C-R>=GetAbsFileDir()<CR>
+nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=GetAbsFileDir()<CR>
+nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
+nnoremap sj :setlocal splitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 
 nnoremap <leader>g :CpGrep  <C-R>=expand('%:p:h') . '/'<CR><C-Left><Left>
 
@@ -364,7 +368,7 @@ inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
 " ------- command noremap -------
 " Complete absolute path of current file (before input the file)
-cnoremap <C-t> <C-R>=expand("%:p:h") . "/" <CR>
+cnoremap <C-t> <C-R>=GetAbsFileDir()<CR>
 
 " ------- visual noremap -------
 " use xclip to copy line(s) to system clipboard in visual mode
