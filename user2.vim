@@ -5,8 +5,9 @@ let user_vim_dir = $HOME.(has('win32') ? '\vimfiles' : '/.vim')
 let g:plug_shallow = 1
 let g:plug_pwindow = 'vertical leftbelow new'
 
-call plug#begin(user_vim_dir.'/plugged')
+call plug#begin(user_vim_dir . '/plugged')
 
+Plug 'vim-airline/vim-airline'
 Plug 'preservim/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'preservim/nerdcommenter'
@@ -18,9 +19,11 @@ Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
-Plug 'bling/vim-bufferline'
 Plug 'rhysd/clever-f.vim'
 Plug 'vim-scripts/a.vim'
+" Plug 'ycm-core/YouCompleteMe'
+Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'w0rp/ale'
 
 if (v:version >= 802)
     Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
@@ -32,20 +35,47 @@ if executable('ctags')
     Plug 'preservim/tagbar'
 endif
 
-if has('terminal')
-    Plug 'skywind3000/vim-terminal-help'
-endif
-
 let coc_dir = $HOME.'/.config/coc'
-if isdirectory(coc_dir)
+if isdirectory(coc_dir) && exists('g:mdot_load_coc')
     let is_ins_coc = 1
     Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-    Plug 'octol/vim-cpp-enhanced-highlight'
 endif
 
 call plug#end()
 
-" ------- nerdcommenter
+
+" ====== airline ====== [[[1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_splits = 1
+
+let g:airline#extensions#tabline#show_buffers = 1
+
+let g:airline#extensions#tabline#alt_sep = 1
+let g:airline#extensions#tabline#left_sep = ' '
+
+let g:airline_disable_statusline = 1
+" only show file name
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+" how to show if overlength
+let g:airline#extensions#tabline#overflow_marker = '…'
+
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nnoremap <leader>1 <Plug>AirlineSelectTab1
+nnoremap <leader>2 <Plug>AirlineSelectTab2
+nnoremap <leader>3 <Plug>AirlineSelectTab3
+nnoremap <leader>4 <Plug>AirlineSelectTab4
+nnoremap <leader>5 <Plug>AirlineSelectTab5
+nnoremap <leader>6 <Plug>AirlineSelectTab6
+nnoremap <leader>7 <Plug>AirlineSelectTab7
+nnoremap <leader>8 <Plug>AirlineSelectTab8
+nnoremap <leader>9 <Plug>AirlineSelectTab9
+nnoremap <leader>0 <Plug>AirlineSelectTab0
+nnoremap <leader>- <Plug>AirlineSelectPrevTab
+nnoremap <leader>= <Plug>AirlineSelectNextTab
+" ====== airline ]]]1
+
+
+" ====== nerdcommenter ======
 let g:NERDSpaceDelims = 1
 " Enable trimming of trailing whitespace when uncommenting
 let g:NERDTrimTrailingWhitespace = 1
@@ -53,7 +83,7 @@ let g:NERDTrimTrailingWhitespace = 1
 " nnoremap <silent> <leader>/ <Plug>NERDCommenterInvert " vim8.2 cannot work?
 nnoremap <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
 
-" ------- nerdtree vim-nerdtree-tabs
+" ====== nerdtree vim-nerdtree-tabs
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeShowIcons = 0
 
@@ -69,35 +99,89 @@ nnoremap <C-n> :NERDTreeTabsToggle<CR>
 " Find file in tree, and cursor move to the file position in tree
 nnoremap <leader>m :NERDTreeFind<CR>
 
-" -------- rainbow
-" let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+" ====== rainbow
+let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
-" ------- vim-highlightedyank
+" ====== vim-highlightedyank
 let g:highlightedyank_highlight_duration = 700
 
-" -------- vim-oscyank
-nmap <leader>c :call OSCYankOperator<CR>
-nmap <leader>cc <leader>c_
+" ====== vim-oscyank
+nnoremap <leader>c :call OSCYankOperator<CR>
+nnoremap <leader>cc <leader>c_
 vmap <leader>c <Plug>OSCYankVisual
 
-" ------- tagbar
-let g:tagbar_width = max([30, winwidth(0) / 5])
-let g:tagbar_compact = 2
-let g:tagbar_indent = 1
-let g:tagbar_iconchars = ['+', '-']
-let g:tagbar_sort = 0
+" ====== tagbar
+if exists(':Tagbar') > 0
+    let g:tagbar_width = max([30, winwidth(0) / 5])
+    let g:tagbar_compact = 2
+    let g:tagbar_indent = 1
+    let g:tagbar_iconchars = ['+', '-']
+    let g:tagbar_sort = 0
+    nnoremap <silent> <F2> :TagbarToggle<CR>
+endif
 
-nnoremap <silent> <F2> :TagbarToggle<CR>
+" ====== indentLine ======
+let g:indentLine_char_list = ['┃', '|', '¦']
+let g:indentLine_conceallevel = 0
 
+
+" ====== easyalign ======
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xnoremap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nnoremap ga <Plug>(EasyAlign)
+
+
+" ====== ale ====== [[[1
+let g:ale_sign_column_always = 0
+let g:ale_set_highlights = 0
+
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '⚡'
+"在vim自带的状态栏中整合ale，airline也可以显示这些信息
+let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
+
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
+nnoremap asp <Plug>(ale_previous_wrap)
+nnoremap asn <Plug>(ale_next_wrap)
+
+"文件内容发生变化时不进行检查
+" let g:ale_lint_on_text_changed = 'never'
+"打开文件时不进行检查
+let g:ale_lint_on_enter = 0
+
+let g:ale_c_gcc_options              = '-Wall -Werror -O2 -std=c11'
+let g:ale_c_clang_options            = '-Wall -Werror -O2 -std=c11'
+let g:ale_c_cppcheck_options         = ''
+
+let g:ale_cpp_gcc_options            = '-Wall -Werror -O2 -std=c++17'
+let g:ale_cpp_clang_options          = '-Wall -Werror -O2 -std=c++17'
+let g:ale_cpp_cppcheck_options       = ''
+
+let g:ale_linters = {
+\   'c++': ['clang++'],
+\   'c': ['clang'],
+\   'python' : ['flake8']
+\}
+" ====== ale ]]]1
+
+
+" following settings must load coc
 if ! exists('is_ins_coc')
   finish
 endif
 
-" ------- indentLine
-let g:indentLine_char_list = ['|', '¦', '┆', '┊']
-let g:indentLine_conceallevel = 2
+" ====== coc.nvim ====== [[[1
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
-" --------- coc.nvim Example Vim configuration
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
 " Use tab for trigger completion with characters ahead and navigate
 inoremap <silent><expr> <TAB>
       \ coc#pum#visible() ? coc#pum#next(1) :
@@ -108,28 +192,18 @@ inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion
-
-" Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
+nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nnoremap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> gy <Plug>(coc-type-definition)
+nnoremap <silent> gi <Plug>(coc-implementation)
+nnoremap <silent> gr <Plug>(coc-references)
 
 " Symbol renaming
-nmap <leader>rn <Plug>(coc-rename)
-
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+nnoremap <leader>rn <Plug>(coc-rename)
 
 nnoremap <silent><nowait> \a  :<C-u>CocList diagnostics<cr>
 " Manage extensions
@@ -148,11 +222,11 @@ nnoremap <silent><nowait> \k  :<C-u>CocPrev<CR>
 nnoremap <silent><nowait> \p  :<C-u>CocListResume<CR>
 
 " coc custom
-if has('autocmd')
 augroup clangdEx
     au FileType javascript setlocal omnifunc=coc#refresh()
     au FileType cpp setlocal omnifunc=coc#refresh()
     au FileType c,cpp nnoremap <leader>h :ClangdSwitchSourceHeaderVSplit<CR>
 augroup END
-endif
+" ====== coc.nvim ]]]1
 
+" vim:fdm=marker:fmr=[[[,]]]

@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-" ------- custom function ------- {{{1
+" ====== custom function ====== [[[1
 function! XTermPasteBegin()
     set pastetoggle=<Esc>[201~
     set paste
@@ -8,19 +8,35 @@ function! XTermPasteBegin()
 endfunction
 
 function! s:ColorsDefault() abort
-    hi User1 ctermbg=darkgrey ctermfg=red
-    hi User2 ctermbg=darkgrey ctermfg=brown
-    hi User3 ctermbg=darkgrey ctermfg=yellow
-    hi User4 ctermbg=darkgrey ctermfg=green
-    hi User5 ctermbg=darkgrey ctermfg=cyan
-    hi User6 ctermbg=darkgrey ctermfg=blue
-    hi User7 ctermbg=darkgrey ctermfg=magenta
-    hi User8 ctermbg=darkgrey ctermfg=white
-    hi User9 ctermbg=darkgrey ctermfg=lightgrey
+    hi User1 ctermbg=darkgrey ctermfg=magenta
+    hi User2 ctermbg=darkgrey ctermfg=white
+    hi User3 ctermbg=darkgrey ctermfg=red
+    hi User4 ctermbg=darkgrey ctermfg=cyan
+    hi User5 ctermbg=darkgrey ctermfg=green
+    hi User6 ctermbg=darkgrey ctermfg=yellow
+    hi User7 ctermbg=darkgrey ctermfg=blue
+    hi User8 ctermbg=darkgrey ctermfg=brown
+    hi User9 ctermbg=darkgrey ctermfg=grey
 endfunction
 
 function! GetAbsFileDir()
     return (expand('%:p:h') . '/')
+endfunction
+
+function! LastSearchCount() abort
+    let l:cnt = searchcount(#{recompute: 0})
+    if empty(l:cnt) || l:cnt.total ==# 0
+        return ''
+    endif
+    if l:cnt.incomplete ==# 1 " timed out
+        return printf(' {%s} [?/??]', @/)
+    elseif l:cnt.incomplete ==# 2 " max count exceeded
+        if l:cnt.total > l:cnt.maxcount
+            let l:fmt = l:cnt.current > l:cnt.maxcount ? ' {%s} [>%d/>%d]' : ' {%s} [%d/>%d]'
+            return printf(l:fmt, @/, l:cnt.current, l:cnt.total)
+        endif
+    endif
+    return printf(' {%s} [%d/%d]', @/, l:cnt.current, l:cnt.total)
 endfunction
 
 if !exists('*SourceAllVimRc')
@@ -37,7 +53,7 @@ if !exists('*SourceAllVimRc')
         echo 'sourced files:' . l:finls
     endfunction
 endif
-" custom function }}}1
+" ====== custom function ]]]1
 
 set encoding=utf-8
 set fileencoding=utf-8
@@ -66,14 +82,14 @@ filetype indent on              " load specific type indent file
 set nocompatible                " don't bother with vi compatibility
 set autoread                    " reload files when changed on disk
 set autowrite
-set gdefault
+set gdefault                    " substitute flag 'g' on
 set confirm                     " processing ont save or read-only file, pop confirm
 set shortmess=aTI
 set magic                       " For regular expressions turn magic on
 set title                       " change the terminal's title
 set history=1000                " history : how many lines of history VIM has to remember
 set scrolloff=5                 " movement keep x lines when scrolling
-set errorbells
+set noerrorbells
 set visualbell t_vb=
 
 set timeout           " for mappings
@@ -154,7 +170,7 @@ if has('mouse')
     set mouse=a                       " use mouse anywher in buffer
 endif
 
-set completeopt=longest,menu            " coding complete with filetype check
+set completeopt=longest,menu,popup,preview            " coding complete with filetype check
 set clipboard^=unnamed,unnamedplus
 set wildmenu                            " show a navigable menu for tab completion
 set wildmode=longest,list,full
@@ -171,7 +187,7 @@ else
     let &showbreak = '->'
 endif
 
-" --- color & theme {{{1
+"  ====== color & theme ====== [[[1
 set t_Co=256
 
 hi MyTabSpace ctermfg=darkgrey
@@ -190,7 +206,6 @@ endif
 " set mark column color
 hi Search cterm=bold ctermbg=darkyellow
 hi CursorLine cterm=NONE gui=NONE term=NONE
-hi CursorLine ctermbg=240
 hi CursorLineNr term=reverse cterm=bold ctermfg=brown
 hi! LineNr ctermfg=darkgrey term=reverse
 hi! link SignColumn   LineNr
@@ -198,30 +213,25 @@ hi! link ShowMarksHLl DiffAdd
 hi! link ShowMarksHLu DiffChange
 
 
-" status line {{{2
-:call s:ColorsDefault()
+" === status line === [[[2
+call s:ColorsDefault()
 
 set laststatus=2   " Always show the status line - use 2 lines for the status bar
 set cmdheight=1    " cmdline which under status line height, default = 1
 
-let &statusline ='%7*[%n] %*'
-let &statusline.='%8*%<%.70F %*'
-let &statusline.='%1*%= %y%m%r%h%w %*'
-let &statusline.='%5*%{&ff}[%{&fenc!=""?&fenc:&enc}%{&bomb?",BOM":""}] %*'
-if t:isMultiByte
-    let &statusline.='%4*%{&et?"•":"»"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
-else
-    let &statusline.='%4*%{&et?"|":">"} sw:%{&sw},ts:%{&ts},sts:%{&sts} %*'
-endif
-let &statusline.='%3*row:%l/%L col:%c %*'
-let &statusline.='%4*%3p%% %*'
-let &statusline.='%9*%{strftime("%H:%M")} %*'
-let &statusline.='%#ErrorMsg#%{&paste?" paste ":""}%*'
+let &statusline ='%1*[%n] %*'
+let &statusline.='%2*%<%.70F %*'
+let &statusline.='%3*%= %y%m%r%H%W %*'
+let &statusline.='%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
+let &statusline.='%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
+let &statusline.='%6*%l/%L,%c%V %*'
+let &statusline.='%7*%P %*'
+let &statusline.='%#ErrorMsg#%{&paste ? " paste " : ""}%*'
 
-" status line }}}2
-" color & theme }}}1
+let &statusline..='%{v:hlsearch ? LastSearchCount() : ""}'
+" === status line ]]]2
+" ====== color & theme ]]]1
 
-if has('autocmd')
 augroup vimrcEx
     " --- Open file at the last edit line
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"zvzz" | endif
@@ -232,6 +242,7 @@ augroup vimrcEx
     " --- Always keep user default color in stl
     au ColorScheme * call s:ColorsDefault()
     " au BufWinEnter * normal! zvzz
+    " au CursorHold * if pumvisible() == 0 | pclose | endif
     " --- Highlight current line only on focused window
     au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
     au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
@@ -245,8 +256,9 @@ augroup vimrcEx
     au FileType systemd setlocal commentstring=#\ %s
     au FileType crontab setlocal nobackup nowritebackup
     au FileType help wincmd L | vertical resize -10
+    au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
 augroup END
-endif
+
 
 " --- others
 set backspace=indent,eol,start  " make that backspace key work the way it should
@@ -273,21 +285,26 @@ else
     let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
 endif
 
-let &grepprg = 'grep --binary-files=without-match -rn $*'
+if executable('rg')
+    let &grepformat = '%f:%l:%c:%m'
+    let &grepprg = 'rg --hidden --vimgrep --smart-case -- $*'
+else
+    let &grepprg = 'grep --binary-files=without-match -rn $*'
+endif
 
-" keyborad bind
+" ======= maps bind ====== [[[1
 let mapleader = "\<space>"
 
-" ------- normal noremap -------
+" ====== normal noremap ======
 nnoremap <space>s :w<CR>
 nnoremap <space>q :wq<CR>
 nnoremap <space><bs> :wqa<CR>
 nnoremap <space>e :q!<CR>
 nnoremap <C-a> ggVG
-nnoremap <space>2 @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
+nnoremap <space><Tab> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
-nnoremap <silent> <leader><space> :nohlsearch<CR>:diffupdate<CR>:syntax sync fromstart<CR><C-l>
+nnoremap <silent> <leader><space> :nohlsearch<CR>:diffupdate<CR>:syntax sync fromstart<CR>
 
 " always goto backward search result
 nnoremap <expr> n  'Nn'[v:searchforward]
@@ -303,8 +320,6 @@ nnoremap <silent> Y y$
 " move current line up and down
 nnoremap <A-Up>   :<c-u>execute 'move -1-' . v:count1<CR>
 nnoremap <A-Down> :<c-u>execute 'move +' . v:count1<CR>
-vnoremap <A-Up>   :m '<-2<CR>gv
-vnoremap <A-Down> :m '>+<CR>gv
 " add lots of line(s)
 nnoremap [\  :<c-u>put! =repeat(nr2char(10), v:count1)<CR>'[
 nnoremap ]\  :<c-u>put =repeat(nr2char(10), v:count1)<CR>
@@ -314,7 +329,7 @@ nnoremap <leader><Down> yyp
 
 nnoremap zl :ls<CR>:b
 nnoremap zk :registers<CR>
-nnoremap z; :marks<CR>:<C-u>g'
+nnoremap z; :marks<CR>:<C-u>'
 nnoremap zj :,+1join<CR>
 
 nnoremap tn :tabnew<CR>
@@ -357,7 +372,7 @@ nnoremap <leader><CR> i<CR><Esc>k$
 xnoremap <  <gv
 xnoremap >  >gv
 
-" ------- insert noremap -------
+" ====== insert noremap ======
 inoremap <C-d> <Esc>ddi
 inoremap <C-z> <Esc>ui
 inoremap <C-u> <C-G>u<C-U>
@@ -366,22 +381,26 @@ inoremap <C-k> <C-o>D
 inoremap <C-b> <C-Left>
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
-" ------- command noremap -------
+" ====== command noremap ======
 " Complete absolute path of current file (before input the file)
 cnoremap <C-t> <C-R>=GetAbsFileDir()<CR>
 
-" ------- visual noremap -------
+" ====== visual noremap ======
+vnoremap <A-Up>   :m '<-2<CR>gv
+vnoremap <A-Down> :m '>+<CR>gv
 " use xclip to copy line(s) to system clipboard in visual mode
 if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
 endif
+" ====== maps ]]]1
 
-" ------- custom command -------
-command! -nargs=+ CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
+
+" ====== custom command ======
+command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
 
 let user2ndVim=$HOME . '/.vim/vimrc'
 if filereadable(user2ndVim)
     exe 'source' user2ndVim
 endif
 
-" vim:fdm=marker:fmr={{{,}}}
+" vim:fdm=marker:fmr=[[[,]]]
