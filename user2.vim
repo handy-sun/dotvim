@@ -33,12 +33,13 @@ endif
 
 if executable('ctags')
     Plug 'preservim/tagbar'
+    let is_tagbar_loaded = 1
 endif
 
 let coc_dir = $HOME.'/.config/coc'
 if isdirectory(coc_dir) && exists('g:mdot_load_coc')
-    let is_ins_coc = 1
     Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+    let is_coc_loaded = 1
 endif
 
 call plug#end()
@@ -111,7 +112,7 @@ nnoremap <leader>cc <leader>c_
 vmap <leader>c <Plug>OSCYankVisual
 
 " ====== tagbar
-if exists(':Tagbar') > 0
+if exists('is_tagbar_loaded') > 0
     let g:tagbar_width = max([30, winwidth(0) / 5])
     let g:tagbar_compact = 2
     let g:tagbar_indent = 1
@@ -170,7 +171,7 @@ let g:ale_linters = {
 
 
 " following settings must load coc
-if ! exists('is_ins_coc')
+if ! exists('is_coc_loaded')
   finish
 endif
 

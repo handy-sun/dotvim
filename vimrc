@@ -55,6 +55,8 @@ if !exists('*SourceAllVimRc')
 endif
 " ====== custom function ]]]1
 
+
+" ====== options ====== [[[1
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
@@ -88,7 +90,7 @@ set shortmess=aTI
 set magic                       " For regular expressions turn magic on
 set title                       " change the terminal's title
 set history=1000                " history : how many lines of history VIM has to remember
-set scrolloff=5                 " movement keep x lines when scrolling
+set scrolloff=3                 " movement keep x lines when scrolling
 set noerrorbells
 set visualbell t_vb=
 
@@ -170,11 +172,13 @@ if has('mouse')
     set mouse=a                       " use mouse anywher in buffer
 endif
 
-set completeopt=longest,menu,popup,preview            " coding complete with filetype check
-set clipboard^=unnamed,unnamedplus
+set completeopt=longest,menu            " coding complete with filetype check
+" set clipboard^=unnamed,unnamedplus
+set suffixes+=.a,.1,.class
 set wildmenu                            " show a navigable menu for tab completion
 set wildmode=longest,list,full
 set wildignore=.git,.hg,.svn,__pycache__,*.pyc,*.o,*.out,*.class,*.jpg,*.jpeg,*.png,*.gif,*.zip,*build*,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**
+set wildoptions=tagfile
 set wildignorecase
 
 if t:isMultiByte
@@ -186,79 +190,6 @@ else
     let &fillchars = 'vert: ,stlnc:#'
     let &showbreak = '->'
 endif
-
-"  ====== color & theme ====== [[[1
-set t_Co=256
-
-hi MyTabSpace ctermfg=darkgrey
-match MyTabSpace /\t\| /
-
-let vim_install_path=$VIMRUNTIME
-let theme_file=vim_install_path . '/colors/habamax.vim'
-let theme_2nd_file=vim_install_path . '/colors/peachpuff.vim'
-
-if filereadable(theme_file)
-    colorscheme habamax
-elseif filereadable(theme_2nd_file)
-    colorscheme peachpuff
-endif
-
-" set mark column color
-hi Search cterm=bold ctermbg=darkyellow
-hi CursorLine cterm=NONE gui=NONE term=NONE
-hi CursorLineNr term=reverse cterm=bold ctermfg=brown
-hi! LineNr ctermfg=darkgrey term=reverse
-hi! link SignColumn   LineNr
-hi! link ShowMarksHLl DiffAdd
-hi! link ShowMarksHLu DiffChange
-
-
-" === status line === [[[2
-call s:ColorsDefault()
-
-set laststatus=2   " Always show the status line - use 2 lines for the status bar
-set cmdheight=1    " cmdline which under status line height, default = 1
-
-let &statusline ='%1*[%n] %*'
-let &statusline.='%2*%<%.70F %*'
-let &statusline.='%3*%= %y%m%r%H%W %*'
-let &statusline.='%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
-let &statusline.='%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
-let &statusline.='%6*%l/%L,%c%V %*'
-let &statusline.='%7*%P %*'
-let &statusline.='%#ErrorMsg#%{&paste ? " paste " : ""}%*'
-
-let &statusline..='%{v:hlsearch ? LastSearchCount() : ""}'
-" === status line ]]]2
-" ====== color & theme ]]]1
-
-augroup vimrcEx
-    " --- Open file at the last edit line
-    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"zvzz" | endif
-    " --- Autoreload .vim
-    au BufWritePost,FileWritePost *vimrc,*.vim nested if &l:autoread > 0 | source <afile> | echo 'source ' . bufname('%') | endif
-    " --- Check if file changed when its window is focus, more eager than 'autoread'
-    au FocusGained * checktime
-    " --- Always keep user default color in stl
-    au ColorScheme * call s:ColorsDefault()
-    " au BufWinEnter * normal! zvzz
-    " au CursorHold * if pumvisible() == 0 | pclose | endif
-    " --- Highlight current line only on focused window
-    au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
-    au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
-    " --- These kind of files donnot set undofile
-    au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp setlocal noundofile
-    au BufRead,BufNew tmux*.conf setf tmux
-    au BufRead,BufNew *.conf,*.config setf config
-    au BufRead,BufNew *.log setf messages
-    au FileType yaml set shiftwidth=2 expandtab
-    au FileType lua set noexpandtab tabstop=4 softtabstop=0
-    au FileType systemd setlocal commentstring=#\ %s
-    au FileType crontab setlocal nobackup nowritebackup
-    au FileType help wincmd L | vertical resize -10
-    au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
-augroup END
-
 
 " --- others
 set backspace=indent,eol,start  " make that backspace key work the way it should
@@ -291,11 +222,88 @@ if executable('rg')
 else
     let &grepprg = 'grep --binary-files=without-match -rn $*'
 endif
+" ====== options ]]]1
 
-" ======= maps bind ====== [[[1
+
+"  ====== color & theme ====== [[[1
+set t_Co=256
+
+hi MyTabSpace ctermfg=darkgrey
+match MyTabSpace /\t\| /
+
+let vim_install_path=$VIMRUNTIME
+let theme_file=vim_install_path . '/colors/habamax.vim'
+let theme_2nd_file=vim_install_path . '/colors/peachpuff.vim'
+
+if filereadable(theme_file)
+    colorscheme habamax
+elseif filereadable(theme_2nd_file)
+    colorscheme peachpuff
+endif
+
+" set mark column color
+hi Search cterm=bold ctermbg=darkyellow
+hi CursorLine cterm=NONE gui=NONE term=NONE
+hi CursorLineNr term=reverse cterm=bold ctermfg=brown
+hi! LineNr ctermfg=darkgrey term=reverse
+hi! link SignColumn   LineNr
+hi! link ShowMarksHLl DiffAdd
+hi! link ShowMarksHLu DiffChange
+
+" === status line === [[[2
+call s:ColorsDefault()
+
+set laststatus=2   " Always show the status line - use 2 lines for the status bar
+set cmdheight=1    " cmdline which under status line height, default = 1
+
+let &statusline ='%1*[%n] %*'
+let &statusline.='%2*%<%.70F %*'
+let &statusline.='%3*%= %y%m%r%H%W %*'
+let &statusline.='%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
+let &statusline.='%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
+let &statusline.='%6*%l/%L,%c%V %*'
+let &statusline.='%7*%P %*'
+let &statusline.='%#ErrorMsg#%{&paste ? " paste " : ""}%*'
+
+let &statusline..='%{v:hlsearch ? LastSearchCount() : ""}'
+" === status line ]]]2
+" ====== color & theme ]]]1
+
+
+" ====== autocmd group vimrcEx ====== [[[1
+augroup vimrcEx
+    " --- Open file at the last edit line
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"zvzz" | endif
+    " --- Autoreload .vim
+    au BufWritePost,FileWritePost *vimrc,*.vim nested if &l:autoread > 0 | source <afile> | echo 'source ' . bufname('%') | endif
+    " --- Check if file changed when its window is focus, more eager than 'autoread'
+    au FocusGained * checktime
+    " --- Always keep user default color in stl
+    au ColorScheme * call s:ColorsDefault()
+    " au BufWinEnter * normal! zvzz
+    au CursorHold * if pumvisible() == 0 | pclose | endif
+    " --- Highlight current line only on focused window
+    au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
+    au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
+    " --- These kind of files donnot set undofile
+    au BufWritePre /tmp/*,COMMIT_EDITMSG,MERGE_MSG,*.tmp setlocal noundofile
+    au BufRead,BufNew tmux*.conf setf tmux
+    au BufRead,BufNew *.conf,*.config setf config
+    au BufRead,BufNew *.log setf messages
+    au FileType yaml set shiftwidth=2 expandtab
+    au FileType lua set noexpandtab tabstop=4 softtabstop=0
+    au FileType systemd setlocal commentstring=#\ %s
+    au FileType crontab setlocal nobackup nowritebackup
+    au FileType help wincmd L | vertical resize -10
+    au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
+augroup END
+" ====== autocmd group vimrcEx ]]]1
+
+
+" ====== maps bind ====== [[[1
 let mapleader = "\<space>"
 
-" ====== normal noremap ======
+" === normal noremap ===
 nnoremap <space>s :w<CR>
 nnoremap <space>q :wq<CR>
 nnoremap <space><bs> :wqa<CR>
@@ -342,9 +350,16 @@ nnoremap sc "ayiw
 nnoremap sp viw"ap
 nnoremap sw "byiW
 nnoremap so viW"bp
-nnoremap sa :%s/<C-R>a//g<Left><Left>
-nnoremap s/ :%s/<C-R>///g<Left><Left>
-nnoremap sr :%s/\<<C-R><C-W>\>//g<Left><Left>
+
+if &gdefault > 0
+    nnoremap sa :%s/<C-R>a/
+    nnoremap s/ :%s/<C-R>//
+    nnoremap sr :%s/\<<C-R><C-W>\>/
+else
+    nnoremap sa :%s/<C-R>a//g<Left><Left>
+    nnoremap s/ :%s/<C-R>///g<Left><Left>
+    nnoremap sr :%s/\<<C-R><C-W>\>//g<Left><Left>
+endif
 
 nnoremap se :e <C-R>=GetAbsFileDir()<CR>
 nnoremap st :tabnew <C-R>=GetAbsFileDir()<CR>
@@ -353,10 +368,10 @@ nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=GetAbsFileDir()<CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 nnoremap sj :setlocal splitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 
-nnoremap <leader>g :CpGrep  <C-R>=expand('%:p:h') . '/'<CR><C-Left><Left>
+nnoremap <leader>g :CpGrep  <C-R>=GetAbsFileDir()<CR><C-Left><Left>
 
-nnoremap <leader>[ :vertical resize -4<CR>
-nnoremap <leader>] :vertical resize +4<CR>
+nnoremap <leader>[ :vertical resize -8<CR>
+nnoremap <leader>] :vertical resize +8<CR>
 nnoremap <leader>; :resize -2<CR>
 nnoremap <leader>' :resize +2<CR>
 
@@ -372,7 +387,7 @@ nnoremap <leader><CR> i<CR><Esc>k$
 xnoremap <  <gv
 xnoremap >  >gv
 
-" ====== insert noremap ======
+" === insert noremap ===
 inoremap <C-d> <Esc>ddi
 inoremap <C-z> <Esc>ui
 inoremap <C-u> <C-G>u<C-U>
@@ -381,11 +396,11 @@ inoremap <C-k> <C-o>D
 inoremap <C-b> <C-Left>
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
-" ====== command noremap ======
+" === command noremap ===
 " Complete absolute path of current file (before input the file)
 cnoremap <C-t> <C-R>=GetAbsFileDir()<CR>
 
-" ====== visual noremap ======
+" === visual noremap ===
 vnoremap <A-Up>   :m '<-2<CR>gv
 vnoremap <A-Down> :m '>+<CR>gv
 " use xclip to copy line(s) to system clipboard in visual mode
@@ -398,6 +413,8 @@ endif
 " ====== custom command ======
 command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
 
+
+" source other vimrc
 let user2ndVim=$HOME . '/.vim/vimrc'
 if filereadable(user2ndVim)
     exe 'source' user2ndVim
