@@ -24,19 +24,21 @@ function! GetAbsFileDir()
 endfunction
 
 function! LastSearchCount() abort
-    let l:cnt = searchcount(#{recompute: 0})
+    let l:cnt = searchcount(#{recompute: 1})
     if empty(l:cnt) || l:cnt.total ==# 0
         return ''
     endif
     if l:cnt.incomplete ==# 1 " timed out
-        return printf(' {%s} [?/??]', @/)
+        return printf(' {%s} [?/??] ', @/)
     elseif l:cnt.incomplete ==# 2 " max count exceeded
         if l:cnt.total > l:cnt.maxcount
-            let l:fmt = l:cnt.current > l:cnt.maxcount ? ' {%s} [>%d/>%d]' : ' {%s} [%d/>%d]'
+            let l:fmt = l:cnt.current > l:cnt.maxcount ? ' {%s} [>%d/>%d] ' : ' {%s} [%d/>%d] '
             return printf(l:fmt, @/, l:cnt.current, l:cnt.total)
+        else
+            return printf(' {%s} [?/0] ', @/)
         endif
     endif
-    return printf(' {%s} [%d/%d]', @/, l:cnt.current, l:cnt.total)
+    return printf(' {%s} [%d/%d] ', @/, l:cnt.current, l:cnt.total)
 endfunction
 
 if !exists('*SourceAllVimRc')
@@ -245,6 +247,8 @@ endif
 hi Search cterm=bold ctermbg=darkyellow
 hi CursorLine cterm=NONE gui=NONE term=NONE
 hi CursorLineNr term=reverse cterm=bold ctermfg=brown
+hi! StatusLine ctermbg=darkgrey
+hi! StatusLineNC term=reverse ctermbg=238
 hi! LineNr ctermfg=darkgrey term=reverse
 hi! link SignColumn   LineNr
 hi! link ShowMarksHLl DiffAdd
@@ -281,7 +285,7 @@ augroup vimrcEx
     " --- Always keep user default color in stl
     au ColorScheme * call s:ColorsDefault()
     " au BufWinEnter * normal! zvzz
-    au CursorHold * if pumvisible() == 0 | pclose | endif
+    " au CursorHold * if pumvisible() == 0 | pclose | endif
     " --- Highlight current line only on focused window
     au WinEnter,BufEnter,InsertLeave * if ! &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal cursorline | endif
     au WinLeave,BufLeave,InsertEnter * if &cursorline && &filetype !~# '^\(dashboard\|clap_\)' && ! &pvw | setlocal nocursorline | endif
