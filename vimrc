@@ -294,7 +294,7 @@ augroup vimrcEx
     au FileType lua set noexpandtab tabstop=4 softtabstop=0
     au FileType systemd setlocal commentstring=#\ %s
     au FileType crontab setlocal nobackup nowritebackup
-    au FileType help wincmd L | vertical resize -10
+    au FileType help if &buftype != 'quickfix' | wincmd L | vertical resize -10 | endif
     au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
 augroup END
 " ====== autocmd group vimrcEx ]]]1
@@ -326,11 +326,13 @@ nnoremap g, g,zvzz
 nnoremap <silent> Y y$
 
 " move current line up and down
-nnoremap <A-Up>   :<c-u>execute 'move -1-' . v:count1<CR>
-nnoremap <A-Down> :<c-u>execute 'move +' . v:count1<CR>
+nnoremap <A-Up>   :<C-u>execute 'move -1-' . v:count1<CR>
+nnoremap <A-Down> :<C-u>execute 'move +' . v:count1<CR>
 " add lots of line(s)
-nnoremap [\  :<c-u>put! =repeat(nr2char(10), v:count1)<CR>'[
-nnoremap ]\  :<c-u>put =repeat(nr2char(10), v:count1)<CR>
+nnoremap [\  :<C-u>put! =repeat(nr2char(10), v:count1)<CR>'[
+nnoremap ]\  :<C-u>put =repeat(nr2char(10), v:count1)<CR>
+" add lots of space(s)
+nnoremap [<space> :<C-u>execute('normal! i' . repeat(' ', v:count1))<CR>l
 
 nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
