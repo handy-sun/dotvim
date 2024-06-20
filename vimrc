@@ -8,9 +8,9 @@ function! XTermPasteBegin()
 endfunction
 
 function! s:ColorsDefault() abort
-    hi User1 ctermbg=darkgrey ctermfg=magenta
+    hi User1 ctermbg=darkgrey ctermfg=red
     hi User2 ctermbg=darkgrey ctermfg=white
-    hi User3 ctermbg=darkgrey ctermfg=red
+    hi User3 ctermbg=darkgrey ctermfg=magenta
     hi User4 ctermbg=darkgrey ctermfg=cyan
     hi User5 ctermbg=darkgrey ctermfg=green
     hi User6 ctermbg=darkgrey ctermfg=yellow
@@ -41,6 +41,16 @@ function! LastSearchCount() abort
     return printf(' {%s} [%d/%d] ', @/, l:cnt.current, l:cnt.total)
 endfunction
 
+function! GoToDefRSplit()
+    " let cwin = winnr()
+    exe "normal! \<C-w>v"
+    exe 'wincmd L | vertical resize -6'
+    exe 'tag ' . expand('<cword>')
+    " exe 'normal zt'
+    " exec cwin . 'wincmd w'
+    " silent! wincmd H
+endfunction
+
 if !exists('*SourceAllVimRc')
     function! SourceAllVimRc()
         let l:finls = ''
@@ -57,7 +67,6 @@ if !exists('*SourceAllVimRc')
 endif
 " ====== custom function ]]]1
 
-
 " ====== options ====== [[[1
 set encoding=utf-8
 set fileencoding=utf-8
@@ -66,7 +75,6 @@ set termencoding=utf-8
 
 set fileformats=unix,dos,mac
 
-filetype plugin indent on       " Load plugins according to detected filetype.
 if has('syntax')
     syntax on
 endif
@@ -78,7 +86,7 @@ else
 endif
 
 " filetype
-filetype on
+filetype on                     " Load plugins according to detected filetype.
 filetype plugin on              " Enable filetype plugins
 filetype indent on              " load specific type indent file
 
@@ -88,7 +96,7 @@ set autoread                    " reload files when changed on disk
 set autowrite
 set gdefault                    " substitute flag 'g' on
 set confirm                     " processing ont save or read-only file, pop confirm
-set shortmess=aTI
+set shortmess=aoOTI
 set magic                       " For regular expressions turn magic on
 set title                       " change the terminal's title
 set history=1000                " history : how many lines of history VIM has to remember
@@ -154,7 +162,7 @@ set background=dark
 " indent
 set autoindent
 set cindent
-set smartindent                 " ??? only for C language
+set smartindent
 set shiftround
 
 set tabstop=4                   " table key width
@@ -222,7 +230,7 @@ if executable('rg')
     let &grepformat = '%f:%l:%c:%m'
     let &grepprg = 'rg --hidden --vimgrep --smart-case -- $*'
 else
-    let &grepprg = 'grep --binary-files=without-match -rn $*'
+    let &grepprg = 'grep --binary-files=without-match -irn $*'
 endif
 " ====== options ]]]1
 
@@ -260,22 +268,26 @@ call s:ColorsDefault()
 set laststatus=2   " Always show the status line - use 2 lines for the status bar
 set cmdheight=1    " cmdline which under status line height, default = 1
 
-let &statusline ='%1*[%n] %*'
-let &statusline.='%2*%<%.70F %*'
-let &statusline.='%3*%= %y%m%r%H%W %*'
-let &statusline.='%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
-let &statusline.='%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
-let &statusline.='%6*%l/%L,%c%V %*'
-let &statusline.='%7*%P %*'
-let &statusline.='%#ErrorMsg#%{&paste ? " paste " : ""}%*'
+" let g:mdot_left_stl =
+let g:mdot_left_stl  = '%1*[%n] %*'
+let g:mdot_left_stl .= '%2*%<%.70f %*'
 
-let &statusline..='%{v:hlsearch ? LastSearchCount() : ""}'
+let g:mdot_right_stl  = '%=%#WarningMsg#%{v:hlsearch ? LastSearchCount() : ""}%3* %y%m%r%H%W %*'
+let g:mdot_right_stl .= '%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
+let g:mdot_right_stl .= '%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
+let g:mdot_right_stl .= '%6*%l/%L,%c%V %*'
+let g:mdot_right_stl .= '%7*%p%% %*'
+let g:mdot_right_stl .= '%#ErrorMsg#%{&paste ? " paste " : ""}%*'
+
+let &statusline  = g:mdot_left_stl
+let &statusline .= g:mdot_right_stl
 " === status line ]]]2
 " ====== color & theme ]]]1
 
 
 " ====== autocmd group vimrcEx ====== [[[1
 augroup vimrcEx
+    autocmd VimEnter * set shellredir=>
     " --- Open file at the last edit line
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"zvzz" | endif
     " --- Autoreload .vim
@@ -316,7 +328,7 @@ nnoremap <C-a> ggVG
 nnoremap <space><Tab> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
-nnoremap <silent> <leader><space> :nohlsearch<CR>:diffupdate<CR>:syntax sync fromstart<CR>
+nnoremap <silent> <leader><space> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
 
 " always goto backward search result
 nnoremap <expr> n  'Nn'[v:searchforward]
@@ -374,7 +386,7 @@ nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=GetAbsFileDir()<CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 nnoremap sj :setlocal splitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 
-nnoremap <leader>g :CpGrep  <C-R>=GetAbsFileDir()<CR><C-Left><Left>
+nnoremap <leader>g :CpGrep "" <C-R>=GetAbsFileDir()<CR><C-Left><Left><Left>
 
 nnoremap <leader>[ :vertical resize -8<CR>
 nnoremap <leader>] :vertical resize +8<CR>
@@ -386,6 +398,7 @@ nnoremap <leader>fr :call SourceAllVimRc()<CR>
 nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1<CR>
 " Trim EOL trailing space
 nnoremap <leader>W :%s/\s\+$//<CR>
+nnoremap <leader>w :call GoToDefRSplit()<CR>
 
 " Enter break line
 nnoremap <leader><CR> i<CR><Esc>k$

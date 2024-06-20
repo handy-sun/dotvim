@@ -19,16 +19,19 @@ Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
+" Plug 'bling/vim-bufferline'
 Plug 'rhysd/clever-f.vim'
 Plug 'vim-scripts/a.vim'
-" Plug 'ycm-core/YouCompleteMe'
 Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'w0rp/ale'
+" Plug 'jiangmiao/auto-pairs'
+Plug 'joshdick/onedark.vim'
+Plug 'junegunn/fzf'
+Plug 'ronakg/quickr-preview.vim'
 
 if (v:version >= 802)
-    Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
     Plug 'Yggdroot/indentLine'
     Plug 'karb94/vim-smoothie'
+    Plug 'APZelos/blamer.nvim'
 endif
 
 if executable('ctags')
@@ -40,6 +43,8 @@ let coc_dir = $HOME.'/.config/coc'
 if isdirectory(coc_dir) && exists('g:mdot_load_coc')
     Plug 'neoclide/coc.nvim', { 'branch': 'release' }
     let is_coc_loaded = 1
+else
+    Plug 'w0rp/ale'
 endif
 
 call plug#end()
@@ -55,26 +60,32 @@ let g:airline#extensions#tabline#alt_sep = 1
 let g:airline#extensions#tabline#left_sep = ' '
 
 let g:airline_disable_statusline = 1
-" only show file name
 let g:airline#extensions#tabline#formatter = 'unique_tail'
-" how to show if overlength
 let g:airline#extensions#tabline#overflow_marker = '…'
 
-let g:airline#extensions#tabline#buffer_idx_mode = 1
-nnoremap <leader>1 <Plug>AirlineSelectTab1
-nnoremap <leader>2 <Plug>AirlineSelectTab2
-nnoremap <leader>3 <Plug>AirlineSelectTab3
-nnoremap <leader>4 <Plug>AirlineSelectTab4
-nnoremap <leader>5 <Plug>AirlineSelectTab5
-nnoremap <leader>6 <Plug>AirlineSelectTab6
-nnoremap <leader>7 <Plug>AirlineSelectTab7
-nnoremap <leader>8 <Plug>AirlineSelectTab8
-nnoremap <leader>9 <Plug>AirlineSelectTab9
-nnoremap <leader>0 <Plug>AirlineSelectTab0
-nnoremap <leader>- <Plug>AirlineSelectPrevTab
-nnoremap <leader>= <Plug>AirlineSelectNextTab
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#buffer_nr_format = '%s:'
 " ====== airline ]]]1
 
+" ====== onedark ======
+if empty($TMUX)
+    if has('nvim')
+        let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+    endif
+    if has('termguicolors')
+        set termguicolors
+    endif
+endif
+
+colorscheme onedark
+
+" ====== blamer.nvim ====== [[[1
+" let g:blamer_enabled = 1
+let g:blamer_delay = 800
+let g:blamer_date_format = '%y/%m/%d %H:%M'
+
+" highlight Blamer guifg=lightgrey
+" ====== blamer.nvim]]]1
 
 " ====== nerdcommenter ======
 let g:NERDSpaceDelims = 1
@@ -83,6 +94,7 @@ let g:NERDTrimTrailingWhitespace = 1
 
 " nnoremap <silent> <leader>/ <Plug>NERDCommenterInvert " vim8.2 cannot work?
 nnoremap <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
+vnoremap <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
 
 " ====== nerdtree vim-nerdtree-tabs
 let g:NERDTreeShowHidden = 1
@@ -107,9 +119,9 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 let g:highlightedyank_highlight_duration = 700
 
 " ====== vim-oscyank
-nnoremap <leader>c :call OSCYankOperator<CR>
-nnoremap <leader>cc <leader>c_
-vmap <leader>c <Plug>OSCYankVisual
+" nnoremap <leader>c :call OSCYankOperator<CR>
+" nnoremap <leader>cc <leader>c_
+" vnoremap <leader>c <Plug>OSCYankVisual
 
 " ====== tagbar
 if exists('is_tagbar_loaded') > 0
@@ -133,54 +145,107 @@ xnoremap ga <Plug>(EasyAlign)
 nnoremap ga <Plug>(EasyAlign)
 
 
-" ====== ale ====== [[[1
-let g:ale_sign_column_always = 0
-let g:ale_set_highlights = 0
+" ====== fzf ====== [[[1
+let t:fzfBinPath = ',' . user_vim_dir . '/plugged/fzf/bin'
+let &runtimepath .= t:fzfBinPath
 
-let g:ale_sign_error = '✗'
-let g:ale_sign_warning = '⚡'
-"在vim自带的状态栏中整合ale，airline也可以显示这些信息
-let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
 
-let g:ale_echo_msg_error_str = 'E'
-let g:ale_echo_msg_warning_str = 'W'
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" Default fzf layout
+" - down / up / left / right
+" let g:fzf_layout = { 'down': '~40%' }
+let g:fzf_layout = { 'down': '40%' }
 
-nnoremap asp <Plug>(ale_previous_wrap)
-nnoremap asn <Plug>(ale_next_wrap)
+autocmd! FileType fzf
+autocmd  FileType fzf set laststatus=0 noshowmode noruler
+    \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 
-"文件内容发生变化时不进行检查
-" let g:ale_lint_on_text_changed = 'never'
-"打开文件时不进行检查
-let g:ale_lint_on_enter = 0
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+" Enable per-command history.
+" CTRL-N and CTRL-P will be automatically bound to next-history and
+" previous-history instead of down and up. If you don't like the change,
+" explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
+let g:fzf_history_dir = '~/.local/share/fzf-history'
 
-let g:ale_c_gcc_options              = '-Wall -Werror -O2 -std=c11'
-let g:ale_c_clang_options            = '-Wall -Werror -O2 -std=c11'
-let g:ale_c_cppcheck_options         = ''
+" [Buffers] 如果可能跳到已存在窗口
+let g:fzf_buffers_jump = 0
+" [[B]Commits] 自定义被'git log'使用的选项
+" let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
 
-let g:ale_cpp_gcc_options            = '-Wall -Werror -O2 -std=c++17'
-let g:ale_cpp_clang_options          = '-Wall -Werror -O2 -std=c++17'
-let g:ale_cpp_cppcheck_options       = ''
+" [Tags] 定义用来产生tag的命令
+let g:fzf_tags_command = 'ctags --c++-kinds=+px --fields=+aiKSz --extras=+q --links=no --exclude={.git/,.github/,build/} -R '
+" [Commands] --expect expression for directly executing the command
+let g:fzf_commands_expect = 'alt-enter,ctrl-x'
 
-let g:ale_linters = {
-\   'c++': ['clang++'],
-\   'c': ['clang'],
-\   'python' : ['flake8']
-\}
-" ====== ale ]]]1
-
+nnoremap <leader>f :FZF<CR>
+" ====== fzf ====== ]]]1
 
 " following settings must load coc
 if ! exists('is_coc_loaded')
-  finish
+    " ====== ale ====== [[[1
+    let g:ale_sign_column_always = 0
+    let g:ale_set_highlights = 0
+
+    let g:ale_sign_error = '✗'
+    let g:ale_sign_warning = '⚡'
+    "在vim自带的状态栏中整合ale，airline也可以显示这些信息
+    let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
+
+    let g:ale_echo_msg_error_str = 'E'
+    let g:ale_echo_msg_warning_str = 'W'
+    let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
+    nnoremap asp <Plug>(ale_previous_wrap)
+    nnoremap asn <Plug>(ale_next_wrap)
+
+    "文件内容发生变化时不进行检查
+    " let g:ale_lint_on_text_changed = 'never'
+    "打开文件时不进行检查
+    let g:ale_lint_on_enter = 0
+
+    let g:ale_c_gcc_options              = '-Wall -Werror -O2 -std=c11'
+    let g:ale_c_clang_options            = '-Wall -Werror -O2 -std=c11'
+    let g:ale_c_cppcheck_options         = ''
+
+    let g:ale_cpp_gcc_options            = '-Wall -Werror -O2 -std=c++17'
+    let g:ale_cpp_clang_options          = '-Wall -Werror -O2 -std=c++17'
+    let g:ale_cpp_cppcheck_options       = ''
+
+    let g:ale_linters = {
+                \   'c++': ['clang++'],
+                \   'c': ['clang'],
+                \   'python' : ['flake8']
+                \}
+    " ====== ale ]]]1
+    finish
 endif
 
 " ====== coc.nvim ====== [[[1
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+let &statusline  = g:mdot_left_stl
+let &statusline .= ' %{coc#status()}%{get(b:,"coc_current_function","")}'
+let &statusline .= g:mdot_right_stl
+
 
 function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
 " Use tab for trigger completion with characters ahead and navigate
@@ -226,7 +291,7 @@ nnoremap <silent><nowait> \p  :<C-u>CocListResume<CR>
 augroup clangdEx
     au FileType javascript setlocal omnifunc=coc#refresh()
     au FileType cpp setlocal omnifunc=coc#refresh()
-    au FileType c,cpp nnoremap <leader>h :ClangdSwitchSourceHeaderVSplit<CR>
+    au FileType c,cpp nnoremap <F4> :ClangdSwitchSourceHeaderVSplit<CR>
 augroup END
 " ====== coc.nvim ]]]1
 
