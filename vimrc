@@ -8,19 +8,24 @@ function! XTermPasteBegin()
 endfunction
 
 function! s:ColorsDefault() abort
-    hi User1 ctermbg=darkgrey ctermfg=red
-    hi User2 ctermbg=darkgrey ctermfg=white
-    hi User3 ctermbg=darkgrey ctermfg=magenta
-    hi User4 ctermbg=darkgrey ctermfg=cyan
-    hi User5 ctermbg=darkgrey ctermfg=green
-    hi User6 ctermbg=darkgrey ctermfg=yellow
-    hi User7 ctermbg=darkgrey ctermfg=blue
-    hi User8 ctermbg=darkgrey ctermfg=brown
-    hi User9 ctermbg=darkgrey ctermfg=grey
+    hi User1 ctermbg=darkgrey ctermfg=red guibg=#414752 guifg=#ec5f66
+    hi User2 ctermbg=darkgrey ctermfg=white guibg=#414752 guifg=#d9d9d9
+    hi User3 ctermbg=darkgrey ctermfg=magenta guibg=#414752 guifg=#ae8abe
+    hi User4 ctermbg=darkgrey ctermfg=cyan guibg=#414752 guifg=#00b0ae
+    hi User5 ctermbg=darkgrey ctermfg=green guibg=#414752 guifg=#259661
+    hi User6 ctermbg=darkgrey ctermfg=yellow guibg=#414752 guifg=#d6bf55
+    hi User7 ctermbg=darkgrey ctermfg=blue guibg=#414752 guifg=#4f92ec
+    hi User8 ctermbg=darkgrey ctermfg=brown guibg=#414752 guifg=#cc7832
+    hi User9 ctermbg=darkgrey ctermfg=grey guibg=#414752 guifg=#aaaaaa
+    hi! StatusLine ctermbg=darkgrey
+    hi  StatusLineNC term=reverse ctermbg=238
+    hi! CursorLine cterm=NONE term=NONE guibg=#404b59
+    hi! CursorLineNr term=reverse cterm=bold ctermfg=brown guifg=#90715c
+    hi VertSplit ctermbg=grey guibg=#7f8284
 endfunction
 
 function! GetAbsFileDir()
-    return (expand('%:p:h') . '/')
+    return expand('%:p:h') . '/'
 endfunction
 
 function! LastSearchCount() abort
@@ -110,18 +115,18 @@ set ttimeout          " for key codes
 set ttimeoutlen=10    " unnoticeable small value
 
 " set nobackup                    " do not keep a backup file
-set nowritebackup
+set writebackup
 
-let t:cacheVim=$HOME . '/.cache/vim'
+let t:cacheVim = $HOME . '/.cache/vim'
 
-let t:undoDir=t:cacheVim . '/undo'
-let t:swapDir=t:cacheVim . '/swap'
-let t:bakDir=t:cacheVim . '/backup'
-let t:vimInfoFile=t:cacheVim . '/viminfo'
+let t:undoDir = t:cacheVim . '/undo'
+let t:swapDir = t:cacheVim . '/swap'
+let t:bakDir = t:cacheVim . '/backup'
+let t:vimInfoFile = t:cacheVim . '/viminfo'
 
 " undo dir
 if has('persistent_undo')
-    let &undodir=t:undoDir
+    let &undodir = t:undoDir
     if !isdirectory(&undodir)
         silent! call mkdir(&undodir, 'p')
     endif
@@ -129,20 +134,20 @@ if has('persistent_undo')
 endif
 
 " swap dir
-let &directory=t:swapDir
+let &directory = t:swapDir
 if !isdirectory(&directory)
     silent! call mkdir(&directory, 'p')
 endif
 set swapfile
 
 " backup dir
-let &backupdir=t:bakDir
+let &backupdir = t:bakDir
 if !isdirectory(&backupdir)
     silent! call mkdir(&backupdir, 'p')
 endif
 
-let &viminfo.=',!'                    " save global variable
-let &viminfo.=',n' . t:vimInfoFile    " set <viminfo> file path
+let &viminfo .= ',!'                    " save global variable
+let &viminfo .= ',n' . t:vimInfoFile    " set <viminfo> file path
 
 " --- show
 set number                      " show line numbers
@@ -252,12 +257,6 @@ elseif filereadable(theme_2nd_file)
 endif
 
 " set mark column color
-hi Search cterm=bold ctermbg=darkyellow
-hi CursorLine cterm=NONE gui=NONE term=NONE
-hi CursorLineNr term=reverse cterm=bold ctermfg=brown
-hi! StatusLine ctermbg=darkgrey
-hi! StatusLineNC term=reverse ctermbg=238
-hi! LineNr ctermfg=darkgrey term=reverse
 hi! link SignColumn   LineNr
 hi! link ShowMarksHLl DiffAdd
 hi! link ShowMarksHLu DiffChange
@@ -268,11 +267,19 @@ call s:ColorsDefault()
 set laststatus=2   " Always show the status line - use 2 lines for the status bar
 set cmdheight=1    " cmdline which under status line height, default = 1
 
-" let g:mdot_left_stl =
 let g:mdot_left_stl  = '%1*[%n] %*'
 let g:mdot_left_stl .= '%2*%<%.70f %*'
 
-let g:mdot_right_stl  = '%=%#WarningMsg#%{v:hlsearch ? LastSearchCount() : ""}%3* %y%m%r%H%W %*'
+let g:mdot_right_stl = '%='
+
+try
+    call searchcount()
+    let g:mdot_right_stl .= '%#WarningMsg#%{v:hlsearch ? LastSearchCount() : ""}'
+catch /.*/
+    let g:mdot_right_stl .= '%#WarningMsg#%{""}'
+endtry
+
+let g:mdot_right_stl .= '%3* %y%m%r%H%W %*'
 let g:mdot_right_stl .= '%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
 let g:mdot_right_stl .= '%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
 let g:mdot_right_stl .= '%6*%l/%L,%c%V %*'
@@ -341,14 +348,23 @@ nnoremap g, g,zvzz
 " Yank text to EOL
 nnoremap <silent> Y y$
 
-" move current line up and down
-nnoremap <A-Up>   :<C-u>execute 'move -1-' . v:count1<CR>
-nnoremap <A-Down> :<C-u>execute 'move +' . v:count1<CR>
-" add lots of line(s)
+" range mapping (v:count1)
+" move current line [count] up/down
+nnoremap <A-Up>   :<C-u>exe 'move -1-' . v:count1<CR>
+nnoremap <A-Down> :<C-u>exe 'move +' . v:count1<CR>
+" add [count] line(s) above/below the current line
 nnoremap [\  :<C-u>put! =repeat(nr2char(10), v:count1)<CR>'[
-nnoremap ]\  :<C-u>put =repeat(nr2char(10), v:count1)<CR>
-" add lots of space(s)
-nnoremap [<space> :<C-u>execute('normal! i' . repeat(' ', v:count1))<CR>l
+nnoremap ]\  :<C-u>put  =repeat(nr2char(10), v:count1)<CR>
+" add [count] space(s) behind cursor, and cursor move follow the word
+nnoremap [<space> :<C-u>exe 'normal! i' . repeat(' ', v:count1)<CR>l
+" add [count] space(s) after cursor, and cursor postion donnot change
+" TDDO: for range
+nnoremap ]<space> my:<C-u>exe 'normal! a '<CR>`y
+
+nnoremap <leader>-  :<C-u>exe v:count1 . 'bprevious'<CR>
+nnoremap <leader>=  :<C-u>exe v:count1 . 'bnext'<CR>
+nnoremap <silent>z[ :<C-u>exe v:count1 . 'cprevious'<CR>
+nnoremap <silent>z] :<C-u>exe v:count1 . 'cnext'<CR>
 
 nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
@@ -392,6 +408,9 @@ nnoremap <leader>[ :vertical resize -8<CR>
 nnoremap <leader>] :vertical resize +8<CR>
 nnoremap <leader>; :resize -2<CR>
 nnoremap <leader>' :resize +2<CR>
+
+nnoremap <Leader>" viw<ESC>bi"<ESC>ea"<ESC>
+nnoremap <Leader>, mzA;<ESC>`z
 
 nnoremap <leader>fr :call SourceAllVimRc()<CR>
 " Search for word equal to each
