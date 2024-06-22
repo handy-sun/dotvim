@@ -56,6 +56,17 @@ function! GoToDefRSplit()
     " silent! wincmd H
 endfunction
 
+function! TabMoveInPopup(direction)
+    let l:colBaseIdx = col('.') - 1
+    if ! l:colBaseIdx || getline('.')[l:colBaseIdx - 1] !~ '\k'
+        return "\<TAB>"
+    elseif 'p' == a:direction
+        return "\<C-p>"
+    else
+        return "\<C-n>"
+    endif
+endfunction
+
 if !exists('*SourceAllVimRc')
     function! SourceAllVimRc()
         let l:finls = ''
@@ -286,7 +297,9 @@ let g:mdot_right_stl .= '%6*%l/%L,%c%V %*'
 let g:mdot_right_stl .= '%7*%p%% %*'
 let g:mdot_right_stl .= '%#ErrorMsg#%{&paste ? " paste " : ""}%*'
 
+let g:mdot_middle_stl = ''
 let &statusline  = g:mdot_left_stl
+let &statusline .= g:mdot_middle_stl
 let &statusline .= g:mdot_right_stl
 " === status line ]]]2
 " ====== color & theme ]]]1
@@ -371,7 +384,7 @@ nnoremap <leader><Down> yyp
 
 nnoremap zl :ls<CR>:b
 nnoremap zk :registers<CR>
-nnoremap z; :marks<CR>:<C-u>'
+nnoremap z; :marks<CR>:<C-u>`
 nnoremap zj :,+1join<CR>
 
 nnoremap tn :tabnew<CR>

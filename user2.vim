@@ -26,7 +26,6 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 " Plug 'jiangmiao/auto-pairs'
 Plug 'joshdick/onedark.vim'
 Plug 'junegunn/fzf'
-Plug 'ronakg/quickr-preview.vim'
 
 if (v:version >= 802)
     Plug 'Yggdroot/indentLine'
@@ -39,11 +38,14 @@ if executable('ctags')
     let is_tagbar_loaded = 1
 endif
 
-let coc_dir = $HOME.'/.config/coc'
-if isdirectory(coc_dir) && exists('g:mdot_load_coc')
-    Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-    let is_coc_loaded = 1
-else
+let g:mdot_lsp_plug = 'coc'
+
+if g:mdot_lsp_plug ==# 'coc'
+    let coc_dir = $HOME . '/.config/coc'
+    if isdirectory(coc_dir)
+        Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+    endif
+elseif g:mdot_lsp_plug ==# 'ale'
     Plug 'w0rp/ale'
 endif
 
@@ -130,13 +132,34 @@ if exists('is_tagbar_loaded') > 0
     let g:tagbar_indent = 1
     let g:tagbar_iconchars = ['+', '-']
     let g:tagbar_sort = 0
+    let g:tagbar_position = 'topleft vertical'
+
     nnoremap <silent> <F2> :TagbarToggle<CR>
+
+    function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
+        let colour = a:current ? '%#StatusLine#' : '%#StatusLineNC#'
+        let flagstr = join(a:flags, '')
+        if flagstr != ''
+            let flagstr = '[' . flagstr . '] '
+        endif
+        return colour . '[' . a:sort . '] ' . flagstr . a:fname
+    endfunction
+
+    " let g:tagbar_status_func = 'TagbarStatusFunc'
+    " let &statusline  = g:mdot_left_stl
+    let g:mdot_middle_stl = ' %{tagbar#currenttag("[%s] ","")}%{tagbar#currenttagtype("(%s) ", "")}'
+    let &statusline  = g:mdot_left_stl
+    let &statusline .= g:mdot_middle_stl
+    let &statusline .= g:mdot_right_stl
+    " let &statusline .= g:mdot_right_stl
 endif
 
 " ====== indentLine ======
-let g:indentLine_char_list = ['┃', '|', '¦']
-let g:indentLine_conceallevel = 0
-
+let g:indentLine_char_list = ['┃', '|']
+let g:indentLine_conceallevel = 2
+let g:vim_json_conceal = 0
+let g:indentLine_defaultGroup = 'SpecialKey'
+" let g:indentLine_color_term = 222
 
 " ====== easyalign ======
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -146,8 +169,8 @@ nnoremap ga <Plug>(EasyAlign)
 
 
 " ====== fzf ====== [[[1
-let t:fzfBinPath = ',' . user_vim_dir . '/plugged/fzf/bin'
-let &runtimepath .= t:fzfBinPath
+" NOTE: must add this path, otherwise fzf cannot work
+let &runtimepath .= ',' . user_vim_dir . '/plugged/fzf/bin'
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
@@ -198,7 +221,8 @@ nnoremap <leader>f :FZF<CR>
 " ====== fzf ====== ]]]1
 
 " following settings must load coc
-if ! exists('is_coc_loaded')
+
+if g:mdot_lsp_plug ==# 'ale'
     " ====== ale ====== [[[1
     let g:ale_sign_column_always = 0
     let g:ale_set_highlights = 0
@@ -234,14 +258,29 @@ if ! exists('is_coc_loaded')
                 \   'python' : ['flake8']
                 \}
     " ====== ale ]]]1
+endif
+
+
+if ! g:mdot_lsp_plug ==# 'coc'
+    inoremap <silent><TAB>   <C-R>=TabMoveInPopup('n')<CR>
+    inoremap <silent><S-TAB> <C-R>=TabMoveInPopup('p')<CR>
+    inoremap <silent><expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+
     finish
 endif
 
 " ====== coc.nvim ====== [[[1
-let &statusline  = g:mdot_left_stl
-let &statusline .= ' %{coc#status()}%{get(b:,"coc_current_function","")}'
-let &statusline .= g:mdot_right_stl
+" coc custom
+augroup clangdEx
+    au FileType javascript setlocal omnifunc=coc#refresh()
+    au FileType cpp setlocal omnifunc=coc#refresh()
+    au FileType c,cpp nnoremap <F4> :call ClangdSwitchSourceHeaderVSplit()<CR>
+augroup END
 
+let g:mdot_middle_stl .= ' %{coc#status()}%{get(b:,"coc_current_function","")}'
+let &statusline  = g:mdot_left_stl
+let &statusline .= g:mdot_middle_stl
+let &statusline .= g:mdot_right_stl
 
 function! CheckBackspace() abort
     let col = col('.') - 1
@@ -254,7 +293,6 @@ inoremap <silent><expr> <TAB>
       \ CheckBackspace() ? "\<Tab>" :
       \ coc#refresh()
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
@@ -286,13 +324,6 @@ nnoremap <silent><nowait> \j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> \k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent><nowait> \p  :<C-u>CocListResume<CR>
-
-" coc custom
-augroup clangdEx
-    au FileType javascript setlocal omnifunc=coc#refresh()
-    au FileType cpp setlocal omnifunc=coc#refresh()
-    au FileType c,cpp nnoremap <F4> :ClangdSwitchSourceHeaderVSplit<CR>
-augroup END
 " ====== coc.nvim ]]]1
 
 " vim:fdm=marker:fmr=[[[,]]]
