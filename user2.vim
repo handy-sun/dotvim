@@ -44,6 +44,7 @@ if g:mdot_lsp_plug ==# 'coc'
     let coc_dir = $HOME . '/.config/coc'
     if isdirectory(coc_dir)
         Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+        let t:is_coc_loaded = 1
     endif
 elseif g:mdot_lsp_plug ==# 'ale'
     Plug 'w0rp/ale'
@@ -133,25 +134,10 @@ if exists('is_tagbar_loaded') > 0
     let g:tagbar_iconchars = ['+', '-']
     let g:tagbar_sort = 0
     let g:tagbar_position = 'topleft vertical'
-
     nnoremap <silent> <F2> :TagbarToggle<CR>
 
-    function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
-        let colour = a:current ? '%#StatusLine#' : '%#StatusLineNC#'
-        let flagstr = join(a:flags, '')
-        if flagstr != ''
-            let flagstr = '[' . flagstr . '] '
-        endif
-        return colour . '[' . a:sort . '] ' . flagstr . a:fname
-    endfunction
-
-    " let g:tagbar_status_func = 'TagbarStatusFunc'
-    " let &statusline  = g:mdot_left_stl
-    let g:mdot_middle_stl = ' %{tagbar#currenttag("[%s] ","")}%{tagbar#currenttagtype("(%s) ", "")}'
-    let &statusline  = g:mdot_left_stl
-    let &statusline .= g:mdot_middle_stl
-    let &statusline .= g:mdot_right_stl
-    " let &statusline .= g:mdot_right_stl
+    let t:mstl_tagbar = '%8*%{tagbar#currenttag("[%s] ","")}%{tagbar#currenttagtype("(%s) ", "")}%*'
+    call SetStatusLineMiddlePart(t:mstl_tagbar, 1)
 endif
 
 " ====== indentLine ======
@@ -261,7 +247,7 @@ if g:mdot_lsp_plug ==# 'ale'
 endif
 
 
-if ! g:mdot_lsp_plug ==# 'coc'
+if ! exists('t:is_coc_loaded')
     inoremap <silent><TAB>   <C-R>=TabMoveInPopup('n')<CR>
     inoremap <silent><S-TAB> <C-R>=TabMoveInPopup('p')<CR>
     inoremap <silent><expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
@@ -277,10 +263,8 @@ augroup clangdEx
     au FileType c,cpp nnoremap <F4> :call ClangdSwitchSourceHeaderVSplit()<CR>
 augroup END
 
-let g:mdot_middle_stl .= ' %{coc#status()}%{get(b:,"coc_current_function","")}'
-let &statusline  = g:mdot_left_stl
-let &statusline .= g:mdot_middle_stl
-let &statusline .= g:mdot_right_stl
+let t:mstl_coc = '%1*%{coc#status()}%{get(b:, "coc_current_function", "")}%*'
+call SetStatusLineMiddlePart(t:mstl_coc, 0)
 
 function! CheckBackspace() abort
     let col = col('.') - 1

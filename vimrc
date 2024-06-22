@@ -11,17 +11,18 @@ function! s:ColorsDefault() abort
     hi User1 ctermbg=darkgrey ctermfg=red guibg=#414752 guifg=#ec5f66
     hi User2 ctermbg=darkgrey ctermfg=white guibg=#414752 guifg=#d9d9d9
     hi User3 ctermbg=darkgrey ctermfg=magenta guibg=#414752 guifg=#ae8abe
-    hi User4 ctermbg=darkgrey ctermfg=cyan guibg=#414752 guifg=#00b0ae
-    hi User5 ctermbg=darkgrey ctermfg=green guibg=#414752 guifg=#259661
+    hi User4 ctermbg=darkgrey ctermfg=cyan guibg=#414752 guifg=#0cb0ae
+    hi User5 ctermbg=darkgrey ctermfg=green guibg=#414752 guifg=#358661
     hi User6 ctermbg=darkgrey ctermfg=yellow guibg=#414752 guifg=#d6bf55
     hi User7 ctermbg=darkgrey ctermfg=blue guibg=#414752 guifg=#4f92ec
-    hi User8 ctermbg=darkgrey ctermfg=brown guibg=#414752 guifg=#cc7832
-    hi User9 ctermbg=darkgrey ctermfg=grey guibg=#414752 guifg=#aaaaaa
-    hi! StatusLine ctermbg=darkgrey
-    hi  StatusLineNC term=reverse ctermbg=238
-    hi! CursorLine cterm=NONE term=NONE guibg=#404b59
-    hi! CursorLineNr term=reverse cterm=bold ctermfg=brown guifg=#90715c
-    hi VertSplit ctermbg=grey guibg=#7f8284
+    hi User8 ctermbg=darkgrey ctermfg=brown guifg=#cc7832
+    hi User9 ctermbg=darkgrey ctermfg=grey guifg=#c14782
+    hi StatusLine ctermbg=darkgrey
+    hi StatusLineNC term=reverse ctermbg=238
+    hi CursorLine   term=NONE cterm=NONE guibg=#404b59
+    hi CursorLineNr term=reverse ctermfg=cyan guifg=#20b0ae
+    hi VertSplit ctermbg=grey guibg=#6f6e70
+    hi Search term=reverse ctermfg=235 ctermbg=180 guifg=#282C34 guibg=#b48232
 endfunction
 
 function! GetAbsFileDir()
@@ -81,6 +82,23 @@ if !exists('*SourceAllVimRc')
         echo 'sourced files:' . l:finls
     endfunction
 endif
+
+" length = 6
+let g:mdot_mstl_list = [ '', '', '', '', '', '' ]
+function! SetStatusLineMiddlePart(str, idx)
+    let l:item = get(g:mdot_mstl_list, a:idx, "NONE")
+    if l:item ==# "NONE"
+        call add(g:mdot_mstl_list, a:str)
+    elseif l:item ==# ''
+        let g:mdot_mstl_list[a:idx] = a:str
+    else
+        echohl 'index: ' . a:idx . ' is not empty!'
+    endif
+
+    let &statusline  = g:mdot_left_stl
+    let &statusline .= join(g:mdot_mstl_list, ' ')
+    let &statusline .= g:mdot_right_stl
+endfunction
 " ====== custom function ]]]1
 
 " ====== options ====== [[[1
@@ -128,7 +146,11 @@ set ttimeoutlen=10    " unnoticeable small value
 " set nobackup                    " do not keep a backup file
 set writebackup
 
-let t:cacheVim = $HOME . '/.cache/vim'
+if has('nvim')
+    let t:cacheVim = $HOME . '/.cache/nvim'
+else
+    let t:cacheVim = $HOME . '/.cache/vim'
+endif
 
 let t:undoDir = t:cacheVim . '/undo'
 let t:swapDir = t:cacheVim . '/swap'
@@ -234,6 +256,15 @@ set helplang=en
 set formatoptions=croqn2mB1
 set sessionoptions=blank,buffers,curdir,folds,help,options,tabpages,winsize,slash,unix,resize
 
+if &term =~ "xterm"
+    " SecureCRT versions prior to 6.1.x do not support 4-digit DECSET
+    "    let &t_ti = "\<Esc>[?1049h"
+    "    let &t_te = "\<Esc>[?1049l"
+    " Use 2-digit DECSET instead
+    let &t_ti = "\<Esc>[?47h"
+    let &t_te = "\<Esc>[?47l"
+endif
+
 if empty($TMUX)
     let &t_SI = "\<Esc>]50;CursorShape=1\x7\<Esc>[?2004h"
     let &t_EI = "\<Esc>]50;CursorShape=0\x7\<Esc>[?2004l"
@@ -285,9 +316,8 @@ let g:mdot_right_stl = '%='
 
 try
     call searchcount()
-    let g:mdot_right_stl .= '%#WarningMsg#%{v:hlsearch ? LastSearchCount() : ""}'
+    let g:mdot_right_stl .= '%#WarningMsg#%{v:hlsearch ? LastSearchCount() : ""}%*'
 catch /.*/
-    let g:mdot_right_stl .= '%#WarningMsg#%{""}'
 endtry
 
 let g:mdot_right_stl .= '%3* %y%m%r%H%W %*'
@@ -297,10 +327,9 @@ let g:mdot_right_stl .= '%6*%l/%L,%c%V %*'
 let g:mdot_right_stl .= '%7*%p%% %*'
 let g:mdot_right_stl .= '%#ErrorMsg#%{&paste ? " paste " : ""}%*'
 
-let g:mdot_middle_stl = ''
-let &statusline  = g:mdot_left_stl
-let &statusline .= g:mdot_middle_stl
-let &statusline .= g:mdot_right_stl
+" first run it to setup stl only
+call SetStatusLineMiddlePart('', 0)
+
 " === status line ]]]2
 " ====== color & theme ]]]1
 
@@ -384,7 +413,7 @@ nnoremap <leader><Down> yyp
 
 nnoremap zl :ls<CR>:b
 nnoremap zk :registers<CR>
-nnoremap z; :marks<CR>:<C-u>`
+nnoremap z; :marks<CR>:<C-u>'
 nnoremap zj :,+1join<CR>
 
 nnoremap tn :tabnew<CR>
@@ -467,7 +496,7 @@ command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 
 
 " source other vimrc
 let user2ndVim=$HOME . '/.vim/vimrc'
-if filereadable(user2ndVim)
+if filereadable(user2ndVim) && ! has('nvim')
     exe 'source' user2ndVim
 endif
 
