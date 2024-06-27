@@ -23,6 +23,7 @@ function! s:ColorsDefault() abort
     hi CursorLineNr term=reverse ctermfg=cyan guifg=#20b0ae
     hi VertSplit ctermbg=grey guibg=#6f6e70
     hi Search term=reverse ctermfg=235 ctermbg=180 guifg=#282C34 guibg=#b48232
+    hi LineNr term=NONE ctermfg=grey guifg=#5f5e60
 endfunction
 
 function! GetAbsFileDir()
@@ -99,6 +100,15 @@ function! SetStatusLineMiddlePart(str, idx)
     let &statusline .= join(g:mdot_mstl_list, ' ')
     let &statusline .= g:mdot_right_stl
 endfunction
+
+function! CheckAndSwitchColorScheme(scheme)
+    try
+        execute 'silent! colorscheme ' . a:scheme
+        return 1
+    catch /^Vim\%((\a\+)\)\=:E185/
+        return 0
+    endtry
+endfunction
 " ====== custom function ]]]1
 
 " ====== options ====== [[[1
@@ -144,7 +154,7 @@ set ttimeout          " for key codes
 set ttimeoutlen=10    " unnoticeable small value
 
 " set nobackup                    " do not keep a backup file
-set writebackup
+set nowritebackup
 
 if has('nvim')
     let t:cacheVim = $HOME . '/.cache/nvim'
@@ -288,14 +298,8 @@ set t_Co=256
 hi MyTabSpace ctermfg=darkgrey
 match MyTabSpace /\t\| /
 
-let vim_install_path=$VIMRUNTIME
-let theme_file=vim_install_path . '/colors/habamax.vim'
-let theme_2nd_file=vim_install_path . '/colors/peachpuff.vim'
-
-if filereadable(theme_file)
-    colorscheme habamax
-elseif filereadable(theme_2nd_file)
-    colorscheme peachpuff
+if CheckAndSwitchColorScheme('habamax') == 0
+    call CheckAndSwitchColorScheme('peachpuff')
 endif
 
 " set mark column color
@@ -360,7 +364,7 @@ augroup vimrcEx
     au FileType systemd setlocal commentstring=#\ %s
     au FileType crontab setlocal nobackup nowritebackup
     au FileType help if &buftype != 'quickfix' | wincmd L | vertical resize -10 | endif
-    au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
+    " au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
 augroup END
 " ====== autocmd group vimrcEx ]]]1
 
@@ -412,9 +416,8 @@ nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
 
 nnoremap zl :ls<CR>:b
-nnoremap zk :registers<CR>
-nnoremap z; :marks<CR>:<C-u>'
-nnoremap zj :,+1join<CR>
+nnoremap z; :registers<CR>
+nnoremap z' :marks<CR>:<C-u>'
 
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -481,8 +484,8 @@ inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 cnoremap <C-t> <C-R>=GetAbsFileDir()<CR>
 
 " === visual noremap ===
-vnoremap <A-Up>   :m '<-2<CR>gv
-vnoremap <A-Down> :m '>+<CR>gv
+vnoremap <A-Up>   :move '<-2<CR>gv
+vnoremap <A-Down> :move '>+<CR>gv
 " use xclip to copy line(s) to system clipboard in visual mode
 if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>

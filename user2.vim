@@ -19,15 +19,14 @@ Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
-" Plug 'bling/vim-bufferline'
 Plug 'rhysd/clever-f.vim'
 Plug 'vim-scripts/a.vim'
 Plug 'octol/vim-cpp-enhanced-highlight'
 " Plug 'jiangmiao/auto-pairs'
-Plug 'joshdick/onedark.vim'
+" Plug 'joshdick/onedark.vim'
 Plug 'junegunn/fzf'
 
-if (v:version >= 802)
+if (v:version > 704)
     Plug 'Yggdroot/indentLine'
     Plug 'karb94/vim-smoothie'
     Plug 'APZelos/blamer.nvim'
@@ -38,7 +37,7 @@ if executable('ctags')
     let is_tagbar_loaded = 1
 endif
 
-let g:mdot_lsp_plug = 'coc'
+let g:mdot_lsp_plug = get(g:, 'mdot_lsp_plug', 'coc')
 
 if g:mdot_lsp_plug ==# 'coc'
     let coc_dir = $HOME . '/.config/coc'
@@ -71,16 +70,16 @@ let g:airline#extensions#tabline#buffer_nr_format = '%s:'
 " ====== airline ]]]1
 
 " ====== onedark ======
-if empty($TMUX)
-    if has('nvim')
-        let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
-    endif
-    if has('termguicolors')
-        set termguicolors
-    endif
-endif
+" if empty($TMUX)
+    " if has('nvim')
+        " let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+    " endif
+    " if has('termguicolors')
+        " set termguicolors
+    " endif
+" endif
 
-colorscheme onedark
+" call CheckAndSwitchColorScheme('onedark')
 
 " ====== blamer.nvim ====== [[[1
 " let g:blamer_enabled = 1
