@@ -95,8 +95,8 @@ let g:NERDSpaceDelims = 1
 let g:NERDTrimTrailingWhitespace = 1
 
 " nnoremap <silent> <leader>/ <Plug>NERDCommenterInvert " vim8.2 cannot work?
-nnoremap <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
-vnoremap <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
+nnoremap <silent> <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
+vnoremap <silent> <leader>/ :call nerdcommenter#Comment('n', "Invert")<CR>
 
 " ====== nerdtree vim-nerdtree-tabs
 let g:NERDTreeShowHidden = 1
@@ -140,7 +140,7 @@ if exists('is_tagbar_loaded') > 0
 endif
 
 " ====== indentLine ======
-let g:indentLine_char_list = ['┃', '|']
+let g:indentLine_char_list = ['┃']
 let g:indentLine_conceallevel = 2
 let g:vim_json_conceal = 0
 let g:indentLine_defaultGroup = 'SpecialKey'
@@ -190,7 +190,8 @@ let g:fzf_colors =
 " CTRL-N and CTRL-P will be automatically bound to next-history and
 " previous-history instead of down and up. If you don't like the change,
 " explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
-let g:fzf_history_dir = '~/.local/share/fzf-history'
+let g:fzf_history_dir = '~/.cache/fzf-history'
+
 
 " [Buffers] 如果可能跳到已存在窗口
 let g:fzf_buffers_jump = 0
@@ -280,14 +281,14 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
-nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
+nnoremap <silent> g[ <Plug>(coc-diagnostic-prev)
+nnoremap <silent> g] <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation
-nnoremap <silent> gd <Plug>(coc-definition)
-nnoremap <silent> gy <Plug>(coc-type-definition)
-nnoremap <silent> gi <Plug>(coc-implementation)
-nnoremap <silent> gr <Plug>(coc-references)
+nnoremap <silent> <leader>gd <Plug>(coc-definition)
+nnoremap <silent> <leader>gy <Plug>(coc-type-definition)
+nnoremap <silent> <leader>gi <Plug>(coc-implementation)
+nnoremap <silent> <leader>gr <Plug>(coc-references)
 
 " Symbol renaming
 nnoremap <leader>rn <Plug>(coc-rename)
