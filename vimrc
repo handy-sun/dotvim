@@ -315,6 +315,7 @@ set cmdheight=1    " cmdline which under status line height, default = 1
 
 let g:mdot_left_stl  = '%1*[%n] %*'
 let g:mdot_left_stl .= '%2*%<%.70f %*'
+let g:mdot_left_stl .= '%3*%y%m%r%H%W %*'
 
 let g:mdot_right_stl = '%='
 
@@ -324,8 +325,7 @@ try
 catch /.*/
 endtry
 
-let g:mdot_right_stl .= '%3* %y%m%r%H%W %*'
-let g:mdot_right_stl .= '%4*%{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
+let g:mdot_right_stl .= '%4* %{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
 let g:mdot_right_stl .= '%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
 let g:mdot_right_stl .= '%6*%l/%L,%c%V %*'
 let g:mdot_right_stl .= '%7*%p%% %*'
@@ -426,7 +426,7 @@ nnoremap to :tabonly<CR>
 nnoremap tc :tabclose<CR>
 
 nnoremap sc "ayiw
-nnoremap sp viw"ap
+nnoremap sv viw"ap
 nnoremap sw "byiW
 nnoremap so viW"bp
 
