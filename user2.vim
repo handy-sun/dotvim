@@ -29,6 +29,9 @@ Plug 'junegunn/fzf'
 if (v:version > 704)
     Plug 'Yggdroot/indentLine'
     Plug 'karb94/vim-smoothie'
+endif
+
+if (v:version > 801)
     Plug 'APZelos/blamer.nvim'
 endif
 
@@ -37,13 +40,14 @@ if executable('ctags')
     let is_tagbar_loaded = 1
 endif
 
-let g:mdot_lsp_plug = get(g:, 'mdot_lsp_plug', 'coc')
+let g:mdot_lsp_plug = get(g:, 'mdot_lsp_plug', 'ale')
 
 if g:mdot_lsp_plug ==# 'coc'
     let coc_dir = $HOME . '/.config/coc'
-    if isdirectory(coc_dir)
+    if isdirectory(coc_dir) && v:version > 801
         Plug 'neoclide/coc.nvim', { 'branch': 'release' }
         let t:is_coc_loaded = 1
+        let g:coc_disable_startup_warning = 1
     endif
 elseif g:mdot_lsp_plug ==# 'ale'
     Plug 'w0rp/ale'
@@ -299,7 +303,7 @@ nnoremap <silent><nowait> \e  :<C-u>CocList extensions<cr>
 " Show commands
 nnoremap <silent><nowait> \c  :<C-u>CocList commands<cr>
 " Find symbol of current document
-nnoremap <silent><nowait> \o  :<C-u>CocList outline<cr>
+nnoremap <silent><nowait> go  :<C-u>CocList outline<cr>
 " Search workspace symbols
 nnoremap <silent><nowait> \s  :<C-u>CocList -I symbols<cr>
 " Do default action for next item
