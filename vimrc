@@ -242,11 +242,15 @@ set wildignorecase
 if t:isMultiByte
     let &listchars = 'tab:»·,trail:•,extends:→,precedes:←,nbsp:±'
     let &fillchars = 'vert: ,stl: ,stlnc: ,diff: '
-    let &showbreak = '⣿'
+    if has('showbreak')
+        let &showbreak = '⣿'
+    endif
 else
     let &listchars = 'tab:>-,trail:.,extends:>,precedes:<,nbsp:+'
     let &fillchars = 'vert: ,stlnc:#'
-    let &showbreak = '->'
+    if has('showbreak')
+        let &showbreak = '->'
+    endif
 endif
 
 " --- others
@@ -298,9 +302,9 @@ set t_Co=256
 hi MyTabSpace ctermfg=darkgrey
 match MyTabSpace /\t\| /
 
-if CheckAndSwitchColorScheme('habamax') == 0
-    call CheckAndSwitchColorScheme('peachpuff')
-endif
+" if CheckAndSwitchColorScheme('habamax') == 0
+    " call CheckAndSwitchColorScheme('peachpuff')
+" endif
 
 " set mark column color
 hi! link SignColumn   LineNr
@@ -326,7 +330,7 @@ catch /.*/
 endtry
 
 let g:mdot_right_stl .= '%4* %{&ff}[%{&fenc!="" ? &fenc : &enc}%{&bomb ? ",BOM" : ""}] %*'
-let g:mdot_right_stl .= '%5*sw:%{&sw}%{&et ? "•" : "»"}ts:%{&ts} %*'
+let g:mdot_right_stl .= '%5*sw:%{&sw}%{&et ? "." : "»"}ts:%{&ts} %*'
 let g:mdot_right_stl .= '%6*%l/%L,%c%V %*'
 let g:mdot_right_stl .= '%7*%p%% %*'
 let g:mdot_right_stl .= '%#ErrorMsg#%{&paste ? " paste " : ""}%*'
@@ -467,6 +471,8 @@ nnoremap <leader>w :call GoToDefRSplit()<CR>
 " Enter break line
 nnoremap <leader><CR> i<CR><Esc>k$
 
+nnoremap ss "*y
+
 xnoremap <  <gv
 xnoremap >  >gv
 
@@ -490,6 +496,9 @@ vnoremap <A-Down> :move '>+<CR>gv
 if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
 endif
+
+vnoremap <leader>s "*y
+vnoremap su "*p
 " ====== maps ]]]1
 
 
