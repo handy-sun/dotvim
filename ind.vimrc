@@ -507,7 +507,7 @@ command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 
 
 
 " source other vimrc
-let user2ndVim=$HOME . '/.vim/vimrc'
+let user2ndVim=$HOME . '/.vim/user2.vim'
 if filereadable(user2ndVim) && ! has('nvim')
     exe 'source' user2ndVim
 endif
