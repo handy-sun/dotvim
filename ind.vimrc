@@ -16,7 +16,7 @@ function! s:ColorsDefault() abort
     hi User6 ctermbg=darkgrey ctermfg=yellow guibg=#414752 guifg=#d6bf55
     hi User7 ctermbg=darkgrey ctermfg=blue guibg=#414752 guifg=#4f92ec
     hi User8 ctermbg=darkgrey ctermfg=brown guifg=#cc7832
-    hi User9 ctermbg=darkgrey ctermfg=grey guifg=#c14782
+    hi User9 ctermbg=240 ctermfg=grey guifg=#c14782
     hi StatusLine ctermbg=darkgrey
     hi StatusLineNC term=reverse ctermbg=238
     hi CursorLine   term=NONE cterm=NONE guibg=#404b59
@@ -319,7 +319,7 @@ set cmdheight=1    " cmdline which under status line height, default = 1
 
 let g:mdot_left_stl  = '%1*[%n] %*'
 let g:mdot_left_stl .= '%2*%<%.70f %*'
-let g:mdot_left_stl .= '%3*%y%m%r%H%W %*'
+let g:mdot_left_stl .= '%3*%y%m%r%H%W %*%9*'
 
 let g:mdot_right_stl = '%='
 
