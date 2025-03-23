@@ -255,8 +255,9 @@ endif
 
 " --- others
 set backspace=indent,eol,start  " make that backspace key work the way it should
-set whichwrap+=<,>,h,l          " allow backspace and cursor crossline border
+set whichwrap+=h,l,<,>,[,],~    " allow backspace and cursor crossline border
 set report=0                    " commands to tell user which line modified
+set diffopt=filler,iwhite,internal,linematch:60,algorithm:patience
 
 if has('folding')
     set foldenable
@@ -400,8 +401,8 @@ nnoremap <silent> Y y$
 
 " range mapping (v:count1)
 " move current line [count] up/down
-nnoremap <A-Up>   :<C-u>exe 'move -1-' . v:count1<CR>
-nnoremap <A-Down> :<C-u>exe 'move +' . v:count1<CR>
+nnoremap <C-Up>   :<C-u>exe 'move -' . (1 + v:count1)<CR>
+nnoremap <C-Down> :<C-u>exe 'move +' . v:count1<CR>
 " add [count] line(s) above/below the current line
 nnoremap [\  :<C-u>put! =repeat(nr2char(10), v:count1)<CR>'[
 nnoremap ]\  :<C-u>put  =repeat(nr2char(10), v:count1)<CR>
@@ -490,8 +491,8 @@ inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 cnoremap <C-t> <C-R>=GetAbsFileDir()<CR>
 
 " === visual noremap ===
-vnoremap <A-Up>   :move '<-2<CR>gv
-vnoremap <A-Down> :move '>+<CR>gv
+vnoremap <C-Up>   :move '<-2<CR>gv
+vnoremap <C-Down> :move '>+<CR>gv
 " use xclip to copy line(s) to system clipboard in visual mode
 if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
