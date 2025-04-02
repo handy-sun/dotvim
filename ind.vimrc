@@ -15,7 +15,7 @@ function! s:ColorsDefault() abort
     hi User5 ctermbg=darkgrey ctermfg=green guibg=#414752 guifg=#358661
     hi User6 ctermbg=darkgrey ctermfg=yellow guibg=#414752 guifg=#d6bf55
     hi User7 ctermbg=darkgrey ctermfg=blue guibg=#414752 guifg=#4f92ec
-    hi User8 ctermbg=darkgrey ctermfg=brown guifg=#cc7832
+    hi User8 ctermbg=240 ctermfg=yellow guifg=#cc7832
     hi User9 ctermbg=240 ctermfg=grey guifg=#c14782
     hi StatusLine ctermbg=darkgrey
     hi StatusLineNC term=reverse ctermbg=238
@@ -97,7 +97,7 @@ function! SetStatusLineMiddlePart(str, idx)
     endif
 
     let &statusline  = g:mdot_left_stl
-    let &statusline .= join(g:mdot_mstl_list, ' ')
+    let &statusline .= join(g:mdot_mstl_list, "%9* ")
     let &statusline .= g:mdot_right_stl
 endfunction
 
@@ -434,6 +434,7 @@ nnoremap sc "ayiw
 nnoremap sv viw"ap
 nnoremap sw "byiW
 nnoremap so viW"bp
+nnoremap s- vg_p
 
 if &gdefault > 0
     nnoremap sa :%s/<C-R>a/
