@@ -257,7 +257,11 @@ endif
 set backspace=indent,eol,start  " make that backspace key work the way it should
 set whichwrap+=h,l,<,>,[,],~    " allow backspace and cursor crossline border
 set report=0                    " commands to tell user which line modified
-set diffopt=filler,iwhite,internal,linematch:60,algorithm:patience
+" set diffopt=filler,iwhite,internal,linematch:60,algorithm:patience
+set diffopt+=vertical,context:3,foldcolumn:0
+if &diffopt =~ 'internal'
+    set diffopt+=indent-heuristic,algorithm:patience
+endif
 
 if has('folding')
     set foldenable
