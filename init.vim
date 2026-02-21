@@ -115,7 +115,9 @@ endfunction
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-set termencoding=utf-8
+if !has('nvim')
+    set termencoding=utf-8
+endif
 
 set fileformats=unix,dos,mac
 
