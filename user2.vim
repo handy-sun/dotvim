@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-let user_vim_dir = $HOME.(has('win32') ? '\vimfiles' : '/.vim')
+let user_vim_dir = $HOME.(has('nvim') ?  '/.config/nvim' : (has('win32') ? '\vimfiles' : '/.vim'))
 
 let g:plug_shallow = 1
 let g:plug_pwindow = 'vertical leftbelow new'
