@@ -137,7 +137,7 @@ if exists('is_tagbar_loaded') > 0
     let g:tagbar_iconchars = ['+', '-']
     let g:tagbar_sort = 0
     let g:tagbar_position = 'topleft vertical'
-    nnoremap <silent> <F2> :TagbarToggle<CR>
+    nnoremap <silent> gi :TagbarToggle<CR>
 
     let t:mstl_tagbar = '%8*%{tagbar#currenttag("[%s] ","")}%{tagbar#currenttagtype("(%s) ", "")}%*'
     call SetStatusLineMiddlePart(t:mstl_tagbar, 1)

@@ -407,8 +407,8 @@ nnoremap <silent> Y y$
 
 " range mapping (v:count1)
 " move current line [count] up/down
-nnoremap <C-Up>   :<C-u>exe 'move -' . (1 + v:count1)<CR>
-nnoremap <C-Down> :<C-u>exe 'move +' . v:count1<CR>
+nnoremap <S-Up>   :<C-u>exe 'move -' . (1 + v:count1)<CR>
+nnoremap <S-Down> :<C-u>exe 'move +' . v:count1<CR>
 " add [count] line(s) above/below the current line
 nnoremap [\  :<C-u>put! =repeat(nr2char(10), v:count1)<CR>'[
 nnoremap ]\  :<C-u>put  =repeat(nr2char(10), v:count1)<CR>
@@ -498,8 +498,8 @@ inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 cnoremap <C-t> <C-R>=GetAbsFileDir()<CR>
 
 " === visual noremap ===
-vnoremap <C-Up>   :move '<-2<CR>gv
-vnoremap <C-Down> :move '>+<CR>gv
+vnoremap <S-Up>   :move '<-2<CR>gv
+vnoremap <S-Down> :move '>+<CR>gv
 " use xclip to copy line(s) to system clipboard in visual mode
 if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
@@ -516,7 +516,8 @@ command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 
 
 " source other vimrc
 let user2ndVim=$HOME . '/.vim/user2.vim'
-if filereadable(user2ndVim)
+let plugVim=$HOME . '/.vim/autoload/plug.vim'
+if filereadable(user2ndVim) && filereadable(plugVim)
     exe 'source' user2ndVim
 endif
 
