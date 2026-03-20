@@ -384,7 +384,7 @@ augroup END
 let mapleader = "\<space>"
 
 " === normal noremap ===
-nnoremap <leader>s :w<CR>
+nnoremap <leader><space> :w<CR>
 nnoremap <leader>q :wq<CR>
 nnoremap <leader><bs> :wqa<CR>
 nnoremap <leader>e :q!<CR>
@@ -392,7 +392,7 @@ nnoremap <C-a> ggVG
 nnoremap <leader><Tab> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
-nnoremap <silent> <leader><space> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
+nnoremap <silent> <leader>s :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
 
 " always goto backward search result
 nnoremap <expr> n  'Nn'[v:searchforward]
@@ -427,8 +427,8 @@ nnoremap <leader><Up> yyP
 nnoremap <leader><Down> yyp
 
 nnoremap zl :ls<CR>:b
-nnoremap z; :registers<CR>
-nnoremap z' :marks<CR>:<C-u>'
+nnoremap z' :registers<CR>
+nnoremap zm :marks<CR>:<C-u>'
 
 nnoremap tn :tabnew<CR>
 nnoremap tk :tabnext<CR>
@@ -480,6 +480,10 @@ nnoremap <leader>w :call GoToDefRSplit()<CR>
 nnoremap <leader><CR> i<CR><Esc>k$
 
 nnoremap ss "*y
+" Wrap the word with double quote
+nnoremap <leader>" viw<ESC>bi"<ESC>ea"<ESC>
+" Append a ';' after EOL
+nnoremap <leader>; mzA;<ESC>`z
 
 xnoremap <  <gv
 xnoremap >  >gv
@@ -505,7 +509,7 @@ if executable('xclip')
     vnoremap <C-c> :silent w !xclip -selection clipboard<CR>
 endif
 
-vnoremap <leader>s "*y
+vnoremap <leader><space> "*y
 vnoremap su "*p
 " ====== maps ]]]1
 
