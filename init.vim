@@ -384,12 +384,12 @@ augroup END
 let mapleader = "\<space>"
 
 " === normal noremap ===
-nnoremap <space>s :w<CR>
-nnoremap <space>q :wq<CR>
-nnoremap <space><bs> :wqa<CR>
-nnoremap <space>e :q!<CR>
+nnoremap <leader>s :w<CR>
+nnoremap <leader>q :wq<CR>
+nnoremap <leader><bs> :wqa<CR>
+nnoremap <leader>e :q!<CR>
 nnoremap <C-a> ggVG
-nnoremap <space><Tab> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
+nnoremap <leader><Tab> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
 nnoremap <silent> <leader><space> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
@@ -466,8 +466,8 @@ nnoremap <leader>] :vertical resize +8<CR>
 nnoremap <leader>; :resize -2<CR>
 nnoremap <leader>' :resize +2<CR>
 
-nnoremap <Leader>" viw<ESC>bi"<ESC>ea"<ESC>
-nnoremap <Leader>, mzA;<ESC>`z
+nnoremap <leader>" viw<ESC>bi"<ESC>ea"<ESC>
+nnoremap <leader>, mzA;<ESC>`z
 
 nnoremap <leader>fr :call SourceAllVimRc()<CR>
 " Search for word equal to each
