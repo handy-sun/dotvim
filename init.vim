@@ -375,7 +375,6 @@ augroup vimrcEx
     au FileType systemd setlocal commentstring=#\ %s
     au FileType crontab setlocal nobackup nowritebackup
     au FileType help if &buftype != 'quickfix' | wincmd L | vertical resize -10 | endif
-    " au FileType c,cpp,cmake,java,python,vim,json let g:mdot_load_coc = 1
 augroup END
 " ====== autocmd group vimrcEx ]]]1
 
@@ -389,7 +388,7 @@ nnoremap <leader>q :wq<CR>
 nnoremap <leader><bs> :wqa<CR>
 nnoremap <leader>e :q!<CR>
 nnoremap <C-a> ggVG
-nnoremap <leader><Tab> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
+nnoremap zx @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
 nnoremap <silent> <leader>s :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
@@ -415,7 +414,6 @@ nnoremap ]\  :<C-u>put  =repeat(nr2char(10), v:count1)<CR>
 " add [count] space(s) behind cursor, and cursor move follow the word
 nnoremap [<space> :<C-u>exe 'normal! i' . repeat(' ', v:count1)<CR>l
 " add [count] space(s) after cursor, and cursor postion donnot change
-" TDDO: for range
 nnoremap ]<space> my:<C-u>exe 'normal! a '<CR>`y
 
 nnoremap <leader>-  :<C-u>exe v:count1 . 'bprevious'<CR>
@@ -463,8 +461,8 @@ nnoremap <leader>g :CpGrep "" <C-R>=GetAbsFileDir()<CR><C-Left><Left><Left>
 
 nnoremap <leader>[ :vertical resize -8<CR>
 nnoremap <leader>] :vertical resize +8<CR>
-nnoremap <leader>; :resize -2<CR>
-nnoremap <leader>' :resize +2<CR>
+nnoremap <leader>k :resize -2<CR>
+nnoremap <leader>j :resize +2<CR>
 
 nnoremap <leader>" viw<ESC>bi"<ESC>ea"<ESC>
 nnoremap <leader>, mzA;<ESC>`z
