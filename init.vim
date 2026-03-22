@@ -515,11 +515,32 @@ vnoremap su "*p
 " ====== custom command ======
 command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
 
+" ====== Plug setup ======
+let g:first_vimrc_dir = fnamemodify($MYVIMRC, ':p:h')
+
+let s:real_filepath = resolve(expand('<sfile>:p'))
+let s:real_dir = fnamemodify(s:real_filepath, ':h')
+
+if ! s:real_dir =~ "/nix/store"
+    g:first_vimrc_dir = s:real_dir
+endif
+
+let g:stop_load_user2 = 0
+" Auto install vim-plug
+let g:vim_data_dir = has('nvim') ? stdpath('data') . '/site' : g:first_vimrc_dir
+let s:plug_filepath = g:vim_data_dir . '/autoload/plug.vim'
+if empty(glob(s:plug_filepath))
+    let g:stop_load_user2 = 1
+    silent execute '!curl -fLo '.s:plug_filepath.' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+let g:vim_plug_dir = g:vim_data_dir . '/plugged'
 
 " source other vimrc
-let user2ndVim=$HOME . '/.vim/user2.vim'
-let plugVim=$HOME . '/.vim/autoload/plug.vim'
-if filereadable(user2ndVim) && filereadable(plugVim)
+let user2ndVim = g:first_vimrc_dir . '/user2.vim'
+
+if filereadable(user2ndVim) && filereadable(s:plug_filepath)
     exe 'source' user2ndVim
 endif
 

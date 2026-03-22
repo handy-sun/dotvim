@@ -1,11 +1,9 @@
-scriptencoding utf-8
-
-let user_vim_dir = $HOME.(has('nvim') ?  '/.config/nvim' : (has('win32') ? '\vimfiles' : '/.vim'))
+" scriptencoding utf-8
 
 let g:plug_shallow = 1
 let g:plug_pwindow = 'vertical leftbelow new'
 
-call plug#begin(user_vim_dir . '/plugged')
+call plug#begin(g:vim_plug_dir)
 
 Plug 'vim-airline/vim-airline'
 Plug 'preservim/nerdtree'
@@ -55,6 +53,9 @@ endif
 
 call plug#end()
 
+if exists('g:stop_load_user2') && g:stop_load_user2 == 1
+    finish
+endif
 
 " ====== airline ====== [[[1
 let g:airline#extensions#tabline#enabled = 1
@@ -159,7 +160,7 @@ nnoremap ga <Plug>(EasyAlign)
 
 " ====== fzf ====== [[[1
 " NOTE: must add this path, otherwise fzf cannot work
-let &runtimepath .= ',' . user_vim_dir . '/plugged/fzf/bin'
+let &runtimepath .= ',' . g:vim_plug_dir . '/fzf/bin'
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
