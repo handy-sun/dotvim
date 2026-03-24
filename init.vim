@@ -416,8 +416,8 @@ nnoremap [<space> :<C-u>exe 'normal! i' . repeat(' ', v:count1)<CR>l
 " add [count] space(s) after cursor, and cursor postion donnot change
 nnoremap ]<space> my:<C-u>exe 'normal! a '<CR>`y
 
-nnoremap <leader>-  :<C-u>exe v:count1 . 'bprevious'<CR>
-nnoremap <leader>=  :<C-u>exe v:count1 . 'bnext'<CR>
+nnoremap <leader><Left>  :<C-u>exe v:count1 . 'bprevious'<CR>
+nnoremap <leader><Right> :<C-u>exe v:count1 . 'bnext'<CR>
 nnoremap <silent>z[ :<C-u>exe v:count1 . 'cprevious'<CR>
 nnoremap <silent>z] :<C-u>exe v:count1 . 'cnext'<CR>
 
@@ -472,6 +472,8 @@ nnoremap <leader>fr :call SourceAllVimRc()<CR>
 nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1<CR>
 " Trim EOL trailing space
 nnoremap <leader>W :%s/\s\+$//<CR>
+" Delete current buffer
+nnoremap df :bdelete<CR>
 nnoremap <leader>w :call GoToDefRSplit()<CR>
 
 " Enter break line
