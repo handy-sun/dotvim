@@ -383,10 +383,10 @@ augroup END
 let mapleader = "\<space>"
 
 " === normal noremap ===
-nnoremap <leader><space> :w<CR>
+nnoremap <leader>2 :w<CR>
 nnoremap <leader>q :wq<CR>
-nnoremap <leader><bs> :wqa<CR>
 nnoremap <leader>e :q!<CR>
+nnoremap <leader><bs> :wqa<CR>
 nnoremap <C-a> ggVG
 nnoremap zx @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
@@ -457,7 +457,7 @@ nnoremap sl :setlocal splitright<CR>:vsplit <C-R>=GetAbsFileDir()<CR>
 nnoremap sk :setlocal nosplitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 nnoremap sj :setlocal splitbelow<CR>:split <C-R>=GetAbsFileDir()<CR>
 
-nnoremap <leader>g :CpGrep "" <C-R>=GetAbsFileDir()<CR><C-Left><Left><Left>
+nnoremap <leader>cp :CpGrep "" <C-R>=GetAbsFileDir()<CR><C-Left><Left><Left>
 
 nnoremap <leader>[ :vertical resize -8<CR>
 nnoremap <leader>] :vertical resize +8<CR>
@@ -473,8 +473,8 @@ nnoremap <leader>fd /\(\<\w\+\>\)\_s*\1<CR>
 " Trim EOL trailing space
 nnoremap <leader>W :%s/\s\+$//<CR>
 " Delete current buffer
-nnoremap df :bdelete<CR>
-nnoremap <leader>w :call GoToDefRSplit()<CR>
+nnoremap sd :bdelete<CR>
+nnoremap gD :call GoToDefRSplit()<CR>
 
 " Enter break line
 nnoremap <leader><CR> i<CR><Esc>k$
