@@ -383,15 +383,15 @@ augroup END
 let mapleader = "\<space>"
 
 " === normal noremap ===
-nnoremap <leader>2 :w<CR>
-nnoremap <leader>q :wq<CR>
-nnoremap <leader>e :q!<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>Q :q!<CR>
 nnoremap <leader><bs> :wqa<CR>
 nnoremap <C-a> ggVG
 nnoremap zx @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
-nnoremap <silent> <leader>s :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
+nnoremap <silent> <Esc> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
 
 " always goto backward search result
 nnoremap <expr> n  'Nn'[v:searchforward]
