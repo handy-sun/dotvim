@@ -22,6 +22,7 @@ Plug 'vim-scripts/a.vim'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/fzf'
+Plug 'NoahTheDuke/vim-just'
 
 if (v:version > 704)
     Plug 'Yggdroot/indentLine'
