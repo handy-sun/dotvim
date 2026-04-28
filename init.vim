@@ -546,5 +546,4 @@ if filereadable(user2ndVim) && filereadable(s:plug_filepath)
     exe 'source' user2ndVim
 endif
 
-:redraw
 " vim:fdm=marker:fmr=[[[,]]]

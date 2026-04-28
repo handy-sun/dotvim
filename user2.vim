@@ -20,7 +20,7 @@ Plug 'mileszs/ack.vim'
 Plug 'rhysd/clever-f.vim'
 Plug 'vim-scripts/a.vim'
 Plug 'octol/vim-cpp-enhanced-highlight'
-" Plug 'jiangmiao/auto-pairs'
+Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/fzf'
 
 if (v:version > 704)
@@ -156,12 +156,13 @@ let g:fzf_action = {
 
 " Default fzf layout
 " - down / up / left / right
-" let g:fzf_layout = { 'down': '~40%' }
 let g:fzf_layout = { 'down': '40%' }
 
-autocmd! FileType fzf
-" autocmd  FileType fzf set laststatus=0 noshowmode noruler
-    " \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+augroup vimrcFzf
+    autocmd!
+    autocmd FileType fzf set laststatus=0 noshowmode noruler
+        \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+augroup END
 
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
