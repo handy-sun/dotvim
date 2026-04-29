@@ -24,6 +24,10 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/fzf'
 Plug 'NoahTheDuke/vim-just'
 
+if has('nvim')
+    Plug 'mizlan/iswap.nvim'
+endif
+
 if (v:version > 704)
     Plug 'Yggdroot/indentLine'
     Plug 'karb94/vim-smoothie'
@@ -144,6 +148,24 @@ let g:indentLine_color_term = 241
 xnoremap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nnoremap ga <Plug>(EasyAlign)
+
+" ====== iswap.nvim ====== [[[1
+if has('nvim')
+lua << EOF
+require('iswap').setup{
+  keys = 'qwertyuiop',
+  flash_style = 'sequential',
+  move_cursor = true,
+  autoswap = true,
+}
+EOF
+nnoremap gss :ISwap<CR>
+nnoremap gsw :ISwapWith<CR>
+nnoremap gsn :ISwapNode<CR>
+nnoremap gsl :ISwapNodeWithLeft<CR>
+nnoremap gsr :ISwapNodeWithRight<CR>
+endif
+" ====== iswap.nvim ]]]1
 
 
 " ====== fzf ====== [[[1
