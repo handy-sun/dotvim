@@ -515,20 +515,7 @@ vnoremap su "*p
 
 
 " ====== custom command ======
-function! s:CpGrep(pattern, ...) abort
-    let l:cmd = 'silent grep!'
-    for l:pat in split(&wildignore, ',')
-        let l:cmd .= ' --glob ' . shellescape('!' . l:pat)
-    endfor
-    let l:cmd .= ' -- ' . shellescape(a:pattern)
-    if a:0 > 0
-        let l:cmd .= ' ' . a:1
-    endif
-    execute l:cmd
-    copen 9
-    redraw!
-endfunction
-command! -nargs=+ -complete=file CpGrep call s:CpGrep(<f-args>)
+command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
 
 " ====== Plug setup ======
 let g:first_vimrc_dir = fnamemodify($MYVIMRC, ':p:h')
