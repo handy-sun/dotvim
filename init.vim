@@ -387,7 +387,7 @@ nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>Q :q!<CR>
 nnoremap <leader><bs> :wqa<CR>
-nnoremap <C-a> ggVG
+nnoremap <leader>va ggVG
 nnoremap zx @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
