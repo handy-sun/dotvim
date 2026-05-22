@@ -465,6 +465,9 @@ nnoremap <leader>k :resize -2<CR>
 nnoremap <leader>j :resize +2<CR>
 
 nnoremap <leader>" viw<ESC>bi"<ESC>ea"<ESC>
+nnoremap <leader>' viw<ESC>bi'<ESC>ea'<ESC>
+vnoremap <leader>" <ESC>`>a"<ESC>`<i"<ESC>
+vnoremap <leader>' <ESC>`>a'<ESC>`<i'<ESC>
 nnoremap <leader>, mzA;<ESC>`z
 
 nnoremap <leader>fr :call SourceAllVimRc()<CR>
@@ -480,8 +483,7 @@ nnoremap gD :call GoToDefRSplit()<CR>
 nnoremap <leader><CR> i<CR><Esc>k$
 
 nnoremap ss "*y
-" Wrap the word with double quote
-nnoremap <leader>" viw<ESC>bi"<ESC>ea"<ESC>
+
 " Append a ';' after EOL
 nnoremap <leader>; mzA;<ESC>`z
 
