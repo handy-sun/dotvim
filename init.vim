@@ -27,7 +27,7 @@ function! s:ColorsDefault() abort
 endfunction
 
 function! GetAbsFileDir()
-    return expand('%:p:h') . '/'
+    return expand('%:p:h') . (has('win32') ? '\' : '/')
 endfunction
 
 function! LastSearchCount() abort
@@ -418,6 +418,8 @@ nnoremap ]<space> my:<C-u>exe 'normal! a '<CR>`y
 
 nnoremap <leader><Left>  :<C-u>exe v:count1 . 'bprevious'<CR>
 nnoremap <leader><Right> :<C-u>exe v:count1 . 'bnext'<CR>
+nnoremap <leader>,       :<C-u>exe v:count1 . 'bprevious'<CR>
+nnoremap <leader>.       :<C-u>exe v:count1 . 'bnext'<CR>
 nnoremap <silent>z[ :<C-u>exe v:count1 . 'cprevious'<CR>
 nnoremap <silent>z] :<C-u>exe v:count1 . 'cnext'<CR>
 
@@ -468,7 +470,6 @@ nnoremap <leader>" viw<ESC>bi"<ESC>ea"<ESC>
 nnoremap <leader>' viw<ESC>bi'<ESC>ea'<ESC>
 vnoremap <leader>" <ESC>`>a"<ESC>`<i"<ESC>
 vnoremap <leader>' <ESC>`>a'<ESC>`<i'<ESC>
-nnoremap <leader>, mzA;<ESC>`z
 
 nnoremap <leader>fr :call SourceAllVimRc()<CR>
 " Search for word equal to each
