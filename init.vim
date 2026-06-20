@@ -519,6 +519,7 @@ vnoremap su "*p
 
 " ====== custom command ======
 command! -nargs=+ -complete=file CpGrep execute 'silent grep! <args>' | copen 9 | redraw!
+ca w!! w !sudo tee "%"
 
 " ====== Plug setup ======
 let g:first_vimrc_dir = fnamemodify($MYVIMRC, ':p:h')
