@@ -547,7 +547,8 @@ let g:vim_plug_dir = g:vim_data_dir . '/plugged'
 let user2ndVim = g:first_vimrc_dir . '/user2.vim'
 
 if filereadable(user2ndVim) && filereadable(s:plug_filepath)
-    exe 'source' user2ndVim
+    execute 'source ' . fnameescape(s:plug_filepath)
+    execute 'source ' . fnameescape(user2ndVim)
 endif
 
 " vim:fdm=marker:fmr=[[[,]]]
