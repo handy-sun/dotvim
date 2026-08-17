@@ -391,7 +391,7 @@ nnoremap <leader>va ggVG
 nnoremap zx @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " cancel highlight search word and clean screen
-nnoremap <silent> <Esc> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
+nnoremap <silent> <leader><Esc> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
 
 " always goto backward search result
 nnoremap <expr> n  'Nn'[v:searchforward]
