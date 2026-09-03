@@ -153,7 +153,7 @@ set visualbell t_vb=
 set timeout           " for mappings
 set timeoutlen=1000   " default value
 set ttimeout          " for key codes
-set ttimeoutlen=10    " unnoticeable small value
+set ttimeoutlen=50    " tolerate ESC split from key-code tail (ssh/slow tty)
 
 " set nobackup                    " do not keep a backup file
 set nowritebackup
@@ -390,8 +390,10 @@ nnoremap <leader><bs> :wqa<CR>
 nnoremap <leader>va ggVG
 nnoremap zx @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
-" cancel highlight search word and clean screen
-nnoremap <silent> <leader><Esc> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
+" cancel highlight search word and clean screen; do not map <Esc> (nor
+" <leader><Esc>): the mapping wins over key-code decoding and eats the <Esc>
+" prefix of arrow keys, leaking the tail (Space+Left typed "O"+newline "D")
+nnoremap <silent> <C-l> :let @/=''<CR>:diffupdate<CR>:syntax sync fromstart<CR>
 
 " always goto backward search result
 nnoremap <expr> n  'Nn'[v:searchforward]

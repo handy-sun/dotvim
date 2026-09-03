@@ -82,7 +82,7 @@ Leader: `<space>`
 | `sa` | Substitute last yanked register across entire file |
 | `sr` | Substitute word under cursor across entire file |
 | `s/` | Substitute last search pattern across entire file |
-| `<Esc>` | Clear search highlight + redraw |
+| `<C-l>` | Clear search highlight + redraw |
 | `n`/`N` | Always backward/forward (reversed from default for incremental consistency) |
 
 ### Text Manipulation
